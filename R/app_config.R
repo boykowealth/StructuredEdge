@@ -22,6 +22,12 @@ app_sys <- function(...) {
 #' @param file Location of the config file
 #'
 #' @noRd
+#' 
+
+library(magrittr)
+library(shiny)
+library(golem)
+
 get_golem_config <- function(
   value,
   config = Sys.getenv(

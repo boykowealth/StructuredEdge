@@ -5,4 +5,7 @@
 #' @import shiny
 #' @noRd
 app_server <- function(input, output, session) {
+  
+  creationZone_server("creationZone_ui_1", r = r)
+  
 }

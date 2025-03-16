@@ -1,0 +1,8 @@
+﻿Param,Option,Forward,Swap,Volatility
+Spot Price,1,1,1,1
+Strike Price,1,0,0,0
+Time to Maturity,1,1,1,1
+Risk-Free Interest Rate,1,1,1,0
+Volatility,1,0,0,1
+Cost of Cary,1,1,0,0
+Exchange Rate (ER),0,0,1,0
