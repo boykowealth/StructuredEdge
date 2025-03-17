@@ -79,15 +79,7 @@ creationZone_ui <- function(id){
                       ),
                       
                       ## PRICING MODEL
-                      shiny::selectInput(
-                        inputId = ns("pricing_select"),  # ADDED ns()
-                        label = "Pricing Model:",
-                        choices = c("Rate", "Price", "Delta", "Gamma", "Volatility"),
-                        selected = "Rates",
-                        multiple = FALSE,
-                        selectize = FALSE,
-                        width = "80%"
-                      ),
+                      shiny::uiOutput(ns("models")),
                       
                       ## NOMINAL VALUE
                       shiny::numericInput(
@@ -155,12 +147,13 @@ creationZone_server<- function(id, r){
       Model = c(
         "Black-Scholes", "Binomial Tree", "Financial", "Physical", 
         "Interest Rate", "Exchange Rate", "Credit Default", "Heston", 
-        "SABR", "Hull-White", "Dupires"
+        "SABR", "Hull-White", "Dupires", "Auto"
       ),
-      Option = c(1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0),
-      Forward = c(0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0),
-      Swap = c(0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0),
-      Exotic = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+      Option = c(1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      Forward = c(0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0),
+      Swap = c(0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0),
+      Exotic = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0),
+      Asset = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
     )
     
     ## DATAFRAMES <END>
@@ -177,23 +170,19 @@ creationZone_server<- function(id, r){
     )
     
     list.params <- shiny::reactive({
-      shiny::req(input$deriv_select)
       
-      # Dynamically select and filter the dataframe
       df.params %>% 
-        dplyr::select(Param, dplyr::all_of(input$deriv_select)) %>% 
-        dplyr::filter(!!rlang::sym(input$deriv_select) == 1) %>% 
+        dplyr::select(Param, dplyr::all_of(params$deriv)) %>% 
+        dplyr::filter(!!rlang::sym(params$deriv) == 1) %>% 
         dplyr::pull(Param)  # Extract the "Param" column as a vector
     })
 
     list.models <- shiny::reactive({
-      shiny::req(input$deriv_select)
       
-      # Dynamically select and filter the dataframe
-      df.params %>% 
-        dplyr::select(Param, dplyr::all_of(input$deriv_select)) %>% 
-        dplyr::filter(!!rlang::sym(input$deriv_select) == 1) %>% 
-        dplyr::pull(Param)  # Extract the "Param" column as a vector
+      df.models %>% 
+        dplyr::select(Model, dplyr::all_of(params$deriv)) %>% 
+        dplyr::filter(!!rlang::sym(params$deriv) == 1) %>% 
+        dplyr::pull(Model)   # Extract the "Model" column as a vector
     })
     
     ## LISTS <END>
@@ -262,6 +251,23 @@ creationZone_server<- function(id, r){
         )
       })
     })
+    
+    output$models <- shiny::renderUI({
+      
+      models <- list.models()
+      
+      shiny::selectInput(
+        inputId = ns("pricing_select"),
+        label = "Pricing Model:",
+        choices = models,
+        selected = models[1],
+        multiple = FALSE,
+        selectize = FALSE,
+        width = "80%"
+      )
+      
+    })
+    
     ## OUTPUTS <END>
     
   })
