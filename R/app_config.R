@@ -27,6 +27,15 @@ app_sys <- function(...) {
 library(magrittr)
 library(shiny)
 library(golem)
+library(dplyr)
+library(Rcpp)
+
+Rcpp::sourceCpp("src/blackScholes.cpp")
+Rcpp::sourceCpp("src/binomialTree.cpp")
+Rcpp::sourceCpp("src/financialForward.cpp")
+Rcpp::sourceCpp("src/physicalForward.cpp")
+Rcpp::sourceCpp("src/irForward.cpp")
+
 
 get_golem_config <- function(
   value,

@@ -13,7 +13,9 @@ Imports:
     golem,
     shiny,
     magrittr,
-    dplyr
+    dplyr,
+    Rcpp
+LinkingTo: Rcpp
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.2
