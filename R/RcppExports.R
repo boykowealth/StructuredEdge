@@ -9,6 +9,10 @@ blackScholes <- function(S, K, T, r, sigma, b) {
     .Call('_StructuredEdge_blackScholes', PACKAGE = 'StructuredEdge', S, K, T, r, sigma, b)
 }
 
+exchangeForward <- function(S, T, r_d, r_f) {
+    .Call('_StructuredEdge_exchangeForward', PACKAGE = 'StructuredEdge', S, T, r_d, r_f)
+}
+
 finForwardContract <- function(S, T, r) {
     .Call('_StructuredEdge_finForwardContract', PACKAGE = 'StructuredEdge', S, T, r)
 }

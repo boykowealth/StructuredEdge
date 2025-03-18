@@ -44,6 +44,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// exchangeForward
+DataFrame exchangeForward(double S, double T, double r_d, double r_f);
+RcppExport SEXP _StructuredEdge_exchangeForward(SEXP SSEXP, SEXP TSEXP, SEXP r_dSEXP, SEXP r_fSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type S(SSEXP);
+    Rcpp::traits::input_parameter< double >::type T(TSEXP);
+    Rcpp::traits::input_parameter< double >::type r_d(r_dSEXP);
+    Rcpp::traits::input_parameter< double >::type r_f(r_fSEXP);
+    rcpp_result_gen = Rcpp::wrap(exchangeForward(S, T, r_d, r_f));
+    return rcpp_result_gen;
+END_RCPP
+}
 // finForwardContract
 DataFrame finForwardContract(double S, double T, double r);
 RcppExport SEXP _StructuredEdge_finForwardContract(SEXP SSEXP, SEXP TSEXP, SEXP rSEXP) {
@@ -91,6 +105,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_StructuredEdge_binomialTree", (DL_FUNC) &_StructuredEdge_binomialTree, 8},
     {"_StructuredEdge_blackScholes", (DL_FUNC) &_StructuredEdge_blackScholes, 6},
+    {"_StructuredEdge_exchangeForward", (DL_FUNC) &_StructuredEdge_exchangeForward, 4},
     {"_StructuredEdge_finForwardContract", (DL_FUNC) &_StructuredEdge_finForwardContract, 3},
     {"_StructuredEdge_irForward", (DL_FUNC) &_StructuredEdge_irForward, 6},
     {"_StructuredEdge_physForwardContract", (DL_FUNC) &_StructuredEdge_physForwardContract, 4},

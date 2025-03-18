@@ -150,7 +150,7 @@ creationZone_server<- function(id, r){
         "SABR", "Hull-White", "Dupires", "Auto"
       ),
       Option = c(1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-      Forward = c(0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0),
+      Forward = c(0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0),
       Swap = c(0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0),
       Exotic = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0),
       Asset = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
