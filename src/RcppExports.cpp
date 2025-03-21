@@ -101,6 +101,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// physicalSwap
+DataFrame physicalSwap(double quantity, double fixed_price, double spot_price);
+RcppExport SEXP _StructuredEdge_physicalSwap(SEXP quantitySEXP, SEXP fixed_priceSEXP, SEXP spot_priceSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type quantity(quantitySEXP);
+    Rcpp::traits::input_parameter< double >::type fixed_price(fixed_priceSEXP);
+    Rcpp::traits::input_parameter< double >::type spot_price(spot_priceSEXP);
+    rcpp_result_gen = Rcpp::wrap(physicalSwap(quantity, fixed_price, spot_price));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_StructuredEdge_binomialTree", (DL_FUNC) &_StructuredEdge_binomialTree, 8},
@@ -109,6 +122,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_StructuredEdge_finForwardContract", (DL_FUNC) &_StructuredEdge_finForwardContract, 3},
     {"_StructuredEdge_irForward", (DL_FUNC) &_StructuredEdge_irForward, 6},
     {"_StructuredEdge_physForwardContract", (DL_FUNC) &_StructuredEdge_physForwardContract, 4},
+    {"_StructuredEdge_physicalSwap", (DL_FUNC) &_StructuredEdge_physicalSwap, 3},
     {NULL, NULL, 0}
 };
 

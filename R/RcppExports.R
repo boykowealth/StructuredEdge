@@ -25,3 +25,7 @@ physForwardContract <- function(S, T, r, c) {
     .Call('_StructuredEdge_physForwardContract', PACKAGE = 'StructuredEdge', S, T, r, c)
 }
 
+physicalSwap <- function(quantity, fixed_price, spot_price) {
+    .Call('_StructuredEdge_physicalSwap', PACKAGE = 'StructuredEdge', quantity, fixed_price, spot_price)
+}
+

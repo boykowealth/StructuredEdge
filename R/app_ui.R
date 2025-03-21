@@ -60,10 +60,10 @@ app_ui <- function(request) {
       shiny::tabsetPanel(
         id = "main_tabs",
         type = "pills",
-        shiny::tabPanel("Creation Zone", creationZone_ui("creationZone_ui_1")),
+        shiny::tabPanel("Creation Zone", mod_creationZone_ui("creationZone_ui_1")),
         shiny::tabPanel("Product Payoff", mod_productPayoff_ui("productPayoff_ui_1")),
-        shiny::tabPanel("Market Simulation", creationZone_ui("creationZone_ui_3")),
-        shiny::tabPanel("Development", creationZone_ui("creationZone_ui_4"))
+        shiny::tabPanel("Market Simulation", mod_creationZone_ui("creationZone_ui_3")),
+        shiny::tabPanel("Development", mod_creationZone_ui("creationZone_ui_4"))
       )
     )
     ## APP MODULES <END>
