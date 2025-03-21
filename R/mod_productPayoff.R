@@ -10,7 +10,8 @@
 mod_productPayoff_ui <- function(id) {
   ns <- NS(id)
   tagList(
- 
+    
+    shiny::uiOutput(ns("test")),
   )
 }
     
@@ -20,6 +21,28 @@ mod_productPayoff_ui <- function(id) {
 mod_productPayoff_server <- function(id, r){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
+    
+    df_test <-shiny::reactive({
+     r$userTable()
+    })
+    
+    output$test <- shiny::renderUI({
+      
+      models <- df_test()$type
+      
+      shiny::selectInput(
+        inputId = ns("pricing_select"),
+        label = "Pricing Model:",
+        choices = models,
+        selected = models[1],
+        multiple = FALSE,
+        selectize = FALSE,
+        width = "80%"
+      )
+      
+    })
+    
+    
  
   })
 }

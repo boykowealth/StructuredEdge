@@ -184,6 +184,15 @@ mod_creationZone_server <- function(id, r){
     
     ## LISTS <END>
     
+    ## r DATA PASSING <START>
+    r$userTable <- shiny::reactive({
+      
+      dplyr::tibble(type = c("a", "b", "c"),
+                    val = c(1, 2, 3)
+                    )
+    })    
+    ## r DATA PASSING <END>
+    
     ## OBSERVERS <START>
     
     shiny::observeEvent(input$asset_select, {
