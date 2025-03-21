@@ -23,7 +23,7 @@ DataFrame finForwardContract(double S, double T, double r) {
   }
   
   return DataFrame::create(
-    _["Price"] = spot_prices,
+    _["Spot"] = spot_prices,
     _["Forward"] = forward_values
   );
 }
