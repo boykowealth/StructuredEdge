@@ -185,12 +185,6 @@ mod_creationZone_server <- function(id, r){
     ## LISTS <END>
     
     ## r DATA PASSING <START>
-    #r$userTable <- shiny::reactive({
-    #  
-    #  dplyr::tibble(type = c("a", "b", "c"),
-    #                val = c(1, 2, 3)
-    #                )
-    #})   
     
     shiny::observeEvent(input$add_asset_button, {
       r$userTable <- 
@@ -199,6 +193,7 @@ mod_creationZone_server <- function(id, r){
                       )
       
     })
+    
     ## r DATA PASSING <END>
     
     ## OBSERVERS <START>
@@ -226,6 +221,7 @@ mod_creationZone_server <- function(id, r){
     shiny::observeEvent(input$nominal_num, {
       params$nominal <- input$nominal_num
     })
+    
     
     ## OBSERVERS <END>
     

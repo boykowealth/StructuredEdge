@@ -22,15 +22,8 @@ mod_productPayoff_server <- function(id, r){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
     
-    #df_test <- shiny::reactive({
-     #r$userTable()
-    #})
-    
-    
-    
     output$test <- shiny::renderUI({
       
-      #models <- df_test()$type
       models <- r$userTable$type
       
       shiny::selectInput(
