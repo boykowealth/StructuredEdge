@@ -58,7 +58,7 @@ mod_creationZone_ui <-  function(id){
                       shiny::uiOutput(ns("derivParams1")),
                       
                       shiny::actionButton(
-                        inputId = "update_asset_button",
+                        inputId = ns("add_asset_button"),
                         label = "Update Position",
                         width = "80%"
                       )
@@ -95,8 +95,8 @@ mod_creationZone_ui <-  function(id){
                       
                       ## DELETE BUTTON
                       shiny::actionButton(
-                        inputId = "delete_asset_button",
-                        label = "Delete Position",
+                        inputId = "reset_asset_button",
+                        label = "Reset Position",
                         width = "80%"
                       )
                       
@@ -185,12 +185,20 @@ mod_creationZone_server <- function(id, r){
     ## LISTS <END>
     
     ## r DATA PASSING <START>
-    r$userTable <- shiny::reactive({
+    #r$userTable <- shiny::reactive({
+    #  
+    #  dplyr::tibble(type = c("a", "b", "c"),
+    #                val = c(1, 2, 3)
+    #                )
+    #})   
+    
+    shiny::observeEvent(input$add_asset_button, {
+      r$userTable <- 
+        dplyr::tibble(type = c("a", "b", "c"),
+                      val = c(1, 2, 3)
+                      )
       
-      dplyr::tibble(type = c("a", "b", "c"),
-                    val = c(1, 2, 3)
-                    )
-    })    
+    })
     ## r DATA PASSING <END>
     
     ## OBSERVERS <START>
