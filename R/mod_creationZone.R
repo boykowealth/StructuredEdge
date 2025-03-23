@@ -21,15 +21,13 @@ mod_creationZone_ui <-  function(id){
       shiny::fluidRow(
         shiny::column(6, 
                       
-                      ## UNDERLYING ASSET
-                      shiny::selectInput(
-                        inputId = ns("asset_select"),
-                        label = "Underlying Asset:",
-                        choices = c("Equity", "Fixed Income", "Foreign Exchange", "Commodity"),
-                        selected = c("Equity"),
-                        multiple = FALSE,
-                        selectize = TRUE,
-                        width = "80%"
+                      ## UNDERLYING POSITION NAME
+                      shiny::textAreaInput(
+                        inputId = ns("posName_text"),
+                        label = "Position Name:",
+                        value = "",
+                        width = "80%",
+                        height = "17px"
                       ),
                       
                       ## DERIVATIVE TYPE
@@ -70,7 +68,7 @@ mod_creationZone_ui <-  function(id){
                       shiny::selectInput(
                         inputId = ns("deriv_select"),
                         label = "Derivative:",
-                        choices = c("Option", "Forward", "Swap", "Exotic", "Asset"),
+                        choices = c("Option", "Forward", "Swap", "Asset"),
                         selected = c("Option"),
                         multiple = FALSE,
                         selectize = TRUE,
@@ -125,52 +123,82 @@ mod_creationZone_server <- function(id, r){
     
     ns <- session$ns
     
-    ## DATAFRAMES <START>
+    ## DATAFRAMES LOCAL <START>
+        # (NO small r pass - only used in filters on this page)
     
     df.params <- dplyr::tibble(
-      Param = c("Spot Price", "Strike Price", "Time to Maturity", 
-                "Risk-Free Interest Rate", "Volatility", "Cost of Carry", 
-                "Exchange Rate", "Fixed Rate", "Floating Rate",
-                "Frequency"
-      ),
-      Option = c(1, 1, 1, 1, 1, 1, 0, 0, 0, 0),
-      Forward = c(1, 0, 1, 1, 0, 1, 0, 0, 0, 0),
-      Swap = c(1, 0, 1, 0, 0, 1, 0, 1, 1, 0),
-      Exotic = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-      Asset = c(1, 0, 1, 0, 0, 1, 0, 0, 0, 0)
+      Param = c("Spot Price", "Strike Price", "Time to Maturity", "Risk-Free Interest Rate", "Volatility",
+                "Cost of Carry", "Up Factor", "Down Factor", "Probability", "Steps",
+                "Foreign Rate", "Domestic Rate", "Rate T1", "Rate T2", "Time 1", "Time 2",
+                "Fixed Spot", "Floating Spot", "Fixed Rate", "Floating Rate"),
+      `Black-Scholes` = c(1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      `Binomial Tree` = c(1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      `Financial Forward` = c(1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      `Commodity Forward` = c(1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      `Forward Rate Agreement` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0),
+      `Exchange Rate Forward` = c(1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0),
+      `Commodity Swap` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0),
+      `Interest Rate Swap` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1),
+      `Exchange Rate Swap` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1),
+      `Equity Swap` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0),
+      `Credit Default Swap` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1),
+      `Variance Swap` = c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1),
+      `Auto` = c(1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
     )
     
     df.models <- dplyr::tibble(
       Model = c(
-        "Black-Scholes", "Binomial Tree", "Financial", "Physical", 
-        "Interest Rate", "Exchange Rate", "Credit Default", "Heston", 
-        "SABR", "Hull-White", "Dupires", "Auto"
+        "Black-Scholes", "Binomial Tree", "Financial Forward", "Commodity Forward",
+        "Forward Rate Agreement", "Exchange Rate Forward", "Commodity Swap", "Interest Rate Swap",
+        "Exchange Rate Swap", "Equity Swap", "Credit Default Swap", "Variance Swap", "Auto"
       ),
-      Option = c(1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-      Forward = c(0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0),
-      Swap = c(0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0),
-      Exotic = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0),
-      Asset = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
+      Option = c(1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      Forward = c(0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0),
+      Swap = c(0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0),
+      Asset = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
     )
+
+    ## DATAFRAMES LOCAL <END>
     
-    ## DATAFRAMES <END>
+    ## DATAFRAMES GLOBAL <START>
+    
+    
+    
+    ## DATAFRAMES GLOBAL <END>
     
     ## LISTS <START>
     
     params <- shiny::reactiveValues(
-      asset = NULL,
+      pos = NULL,
       deriv = NULL,
       derivType = NULL,
       model = NULL,
       position = NULL,
-      nominal = NULL
+      nominal = NULL,
+      sigma = NULL,
+      costCarry = NULL,
+      upFactor = NULL,
+      downFactor = NULL,
+      prob = NULL,
+      steps = NULL,
+      rForeign = NULL,
+      rDomestic = NULL,
+      r1 = NULL,
+      r2 = NULL,
+      t1 = NULL,
+      t2 = NULL,
+      fixSpot = NULL,
+      floatSpot = NULL,
+      fixRate = NULL,
+      floatRate = NULL
+      
     )
     
     list.params <- shiny::reactive({
       
       df.params %>% 
-        dplyr::select(Param, dplyr::all_of(params$deriv)) %>% 
-        dplyr::filter(!!rlang::sym(params$deriv) == 1) %>% 
+        dplyr::select(Param, dplyr::all_of(params$model)) %>% 
+        dplyr::filter(!!rlang::sym(params$model) == 1) %>% 
         dplyr::pull(Param)  # Extract the "Param" column as a vector
     })
     
@@ -187,6 +215,19 @@ mod_creationZone_server <- function(id, r){
     ## r DATA PASSING <START>
     
     shiny::observeEvent(input$add_asset_button, {
+      
+      ## General Selections
+      params$pos <- input$posName_text
+      params$deriv <- input$deriv_select
+      params$derivType <- input$derivType_select
+      params$model <- input$pricing_select
+      params$position <- input$pos_select
+      params$nominal <- input$nominal_num
+      
+      ## Pricing Parameters
+      params
+      
+      
       r$userTable <- 
         dplyr::tibble(type = c("a", "b", "c"),
                       val = c(1, 2, 3)
@@ -195,11 +236,11 @@ mod_creationZone_server <- function(id, r){
     })
     
     ## r DATA PASSING <END>
-    
+  
     ## OBSERVERS <START>
     
-    shiny::observeEvent(input$asset_select, {
-      params$asset <- input$asset_select
+    shiny::observeEvent(input$posName_text, {
+      params$asset <- input$posName_text
     })
     
     shiny::observeEvent(input$deriv_select, {
@@ -222,9 +263,7 @@ mod_creationZone_server <- function(id, r){
       params$nominal <- input$nominal_num
     })
     
-    
-    ## OBSERVERS <END>
-    
+    ## OBSERVER <END>
     
     ## OUTPUTS <START>
     output$derivParams1 <- shiny::renderUI({
