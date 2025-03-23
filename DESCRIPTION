@@ -2,10 +2,10 @@ Package: StructuredEdge
 Title: An Amazing Shiny App
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "firstname",
-           family = "lastname",
+    person(given = "Brayden",
+           family = "Boyko",
            role = c("aut", "cre"),
-           email = "your@email.com")
+           email = "braydenboyko@boykowealth.com")
 Description: What the package does (one paragraph).
 License: What license is it under?
 Imports: 
@@ -14,7 +14,8 @@ Imports:
     shiny,
     magrittr,
     dplyr,
-    Rcpp
+    Rcpp,
+    DT
 LinkingTo: Rcpp
 Encoding: UTF-8
 LazyData: true

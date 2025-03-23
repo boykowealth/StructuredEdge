@@ -89,8 +89,6 @@ mod_creationZone_ui <-  function(id){
                         label = "Reset Position",
                         width = "80%"
                       )
-                      
-                      
         )
       )
       
@@ -100,7 +98,9 @@ mod_creationZone_ui <-  function(id){
     
     ## PORTFOLIO MANAGEMNT - RIGHT <START>
     bslib::card(
-      bslib::card_header("Product Positions")
+      bslib::card_header("Product Positions"),
+      shiny::p("Test"),
+      DT::DTOutput(ns("masterView"))
     )
     ## PORTFOLIO MANAGEMNT - RIGHT <END>
     
@@ -263,6 +263,10 @@ mod_creationZone_server <- function(id, r){
       
       print(r$masterTable) ## TO BE REMOVED
       
+      output$masterView <- DT::renderDT({
+        DT::datatable(r$masterTable) ## update display table
+      })
+        
     })
     
     ## r DATA PASSING <END>
@@ -296,6 +300,15 @@ mod_creationZone_server <- function(id, r){
     ## OBSERVER <END>
     
     ## OUTPUTS <START>
+    
+    observe({
+      r$placeHolder <- dplyr::tibble(ty = c("Position","Derivative", "Type", "Model", "Position", "Nominal"), val = c("None", "None", "None", "None", "None", "None"))
+    })
+    
+    output$masterView <- DT::renderDT({
+      DT::datatable(r$placeHolder) ## init viewable table
+    })
+    
     output$derivParams1 <- shiny::renderUI({
       params <- list.params()
       half <- ceiling(length(params) / 2) ## Used in spliting list

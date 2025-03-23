@@ -29,6 +29,7 @@ library(shiny)
 library(golem)
 library(dplyr)
 library(Rcpp)
+library(DT)
 
 Rcpp::sourceCpp("src/blackScholes.cpp")
 Rcpp::sourceCpp("src/binomialTree.cpp")
