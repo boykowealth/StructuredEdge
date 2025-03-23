@@ -31,15 +31,7 @@ mod_creationZone_ui <-  function(id){
                       ),
                       
                       ## DERIVATIVE TYPE
-                      shiny::selectInput(
-                        inputId = ns("derivType_select"),
-                        label = "Derivative Type:",
-                        choices = c("US1M", "US3M", "US6M", "US1Y", "US2Y", "US5Y", "US7Y", "US10Y", "US20Y", "US30Y"),
-                        selected = c("US2Y"),
-                        multiple = FALSE,
-                        selectize = TRUE,
-                        width = "80%"
-                      ),
+                      shiny::uiOutput(ns("types")),
                       
                       ## POSITION
                       shiny::selectInput(
@@ -157,6 +149,14 @@ mod_creationZone_server <- function(id, r){
       Swap = c(0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0),
       Asset = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
     )
+    
+    df.type <- dplyr::tibble(
+      Type = c("Call", "Put", "Fixed", "Float", "Auto"),
+      Option = c(1, 1, 0, 0, 0),
+      Forward = c(0, 0, 0, 0, 1),
+      Swap = c(0, 0, 1, 1, 0),
+      Asset = c(0, 0, 0, 0, 1)
+    )
 
     ## DATAFRAMES LOCAL <END>
     
@@ -169,29 +169,31 @@ mod_creationZone_server <- function(id, r){
     ## LISTS <START>
     
     params <- shiny::reactiveValues(
-      pos = NULL,
-      deriv = NULL,
-      derivType = NULL,
-      model = NULL,
-      position = NULL,
-      nominal = NULL,
-      sigma = NULL,
-      costCarry = NULL,
-      upFactor = NULL,
-      downFactor = NULL,
-      prob = NULL,
-      steps = NULL,
-      rForeign = NULL,
-      rDomestic = NULL,
-      r1 = NULL,
-      r2 = NULL,
-      t1 = NULL,
-      t2 = NULL,
-      fixSpot = NULL,
-      floatSpot = NULL,
-      fixRate = NULL,
-      floatRate = NULL
-      
+      pos = paste("auto-",rnorm(1,0,1)),
+      deriv = 0,
+      derivType = 0,
+      model = 0,
+      position = 0,
+      nominal = 0,
+      spot = 0,
+      strike = 0,
+      t2m = 0,
+      sigma = 0,
+      costCarry = 0,
+      upFactor = 0,
+      downFactor = 0,
+      prob = 0,
+      steps = 0,
+      rForeign = 0,
+      rDomestic = 0,
+      r1 = 0,
+      r2 = 0,
+      t1 = 0,
+      t2 = 0,
+      fixSpot = 0,
+      floatSpot = 0,
+      fixRate = 0,
+      floatRate = 0
     )
     
     list.params <- shiny::reactive({
@@ -210,28 +212,56 @@ mod_creationZone_server <- function(id, r){
         dplyr::pull(Model)   # Extract the "Model" column as a vector
     })
     
+    list.types <- shiny::reactive({
+      
+      df.type %>% 
+        dplyr::select(Type, dplyr::all_of(params$deriv)) %>% 
+        dplyr::filter(!!rlang::sym(params$deriv) == 1) %>% 
+        dplyr::pull(Type)   # Extract the "Model" column as a vector
+    })    
+    
     ## LISTS <END>
     
-    ## r DATA PASSING <START>
+    ## r PASSING <START>
     
     shiny::observeEvent(input$add_asset_button, {
       
-      ## General Selections
-      params$pos <- input$posName_text
-      params$deriv <- input$deriv_select
-      params$derivType <- input$derivType_select
-      params$model <- input$pricing_select
-      params$position <- input$pos_select
-      params$nominal <- input$nominal_num
+      tmpTable <- ## Temporary Table For User Selections (Is rbind to master table)
+        dplyr::tibble(
+          pos = params$pos,
+          deriv = params$deriv,
+          derivType = params$derivType,
+          model = params$model,
+          position = params$position,
+          nominal = params$nominal,
+          spot = params$spot,
+          strike = params$strike,
+          t2m = params$t2m,
+          sigma = params$sigma,
+          costCarry = params$costCarry,
+          upFactor = params$upFactor,
+          downFactor = params$downFactor,
+          prob = params$prob,
+          steps = params$steps,
+          rForeign = params$rForeign,
+          rDomestic = params$rDomestic,
+          r1 = params$r1,
+          r2 = params$r2,
+          t1 = params$t1,
+          t2 = params$t2,
+          fixSpot = params$fixSpot,
+          floatSpot = params$floatSpot,
+          fixRate = params$fixRate,
+          floatRate = params$floatRate,
+          )
       
-      ## Pricing Parameters
-      params
+      if (is.null(r$masterTable)) {
+        r$masterTable <- tmpTable  ## Initialize masterTable
+      } else {
+        r$masterTable <- rbind(r$masterTable, tmpTable)  ## append table if exists
+      }
       
-      
-      r$userTable <- 
-        dplyr::tibble(type = c("a", "b", "c"),
-                      val = c(1, 2, 3)
-                      )
+      print(r$masterTable) ## TO BE REMOVED
       
     })
     
@@ -310,6 +340,22 @@ mod_creationZone_server <- function(id, r){
         label = "Pricing Model:",
         choices = models,
         selected = models[1],
+        multiple = FALSE,
+        selectize = FALSE,
+        width = "80%"
+      )
+      
+    })
+    
+    output$types <- shiny::renderUI({
+      
+      types <- list.types()
+      
+      shiny::selectInput(
+        inputId = ns("type_select"),
+        label = "Derivative Type:",
+        choices = types,
+        selected = types[1],
         multiple = FALSE,
         selectize = FALSE,
         width = "80%"
