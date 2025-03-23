@@ -167,9 +167,14 @@ mod_creationZone_server <- function(id, r){
     ## DATAFRAMES GLOBAL <END>
     
     ## LISTS <START>
+    randomNames <- c("apple", "banana", "cherry", "date", "elderberry", "fig", "grape", "honeydew", "kiwi", "lemon",
+                     "mango", "nectarine", "orange", "papaya", "quince", "raspberry", "strawberry", "tangerine", "ugli", "vanilla",
+                     "watermelon", "xigua", "yam", "zucchini", "apricot", "blueberry", "cranberry", "dragonfruit", "eggplant", "feijoa", ## USED IN RANDOM NAME GEN
+                     "guava", "huckleberry", "imbe", "jackfruit", "kumquat", "lime", "mulberry", "navel", "olive", "peach",
+                     "persimmon", "plum", "pomegranate", "redcurrant", "salak", "tomato", "uvaia", "voavanga", "wolfberry", "yumberry")
     
     params <- shiny::reactiveValues(
-      pos = paste("auto-",rnorm(1,0,1)),
+      pos = 0,
       deriv = 0,
       derivType = 0,
       model = 0,
@@ -261,11 +266,54 @@ mod_creationZone_server <- function(id, r){
         r$masterTable <- rbind(r$masterTable, tmpTable)  ## append table if exists
       }
       
-      print(r$masterTable) ## TO BE REMOVED
+      r$viewTable <- r$masterTable %>% 
+        dplyr::select(pos, deriv, derivType, model, position, nominal) %>% ## Generate standard viewing table for UI
+        dplyr::rename(
+          Name = pos,
+          Derviative = deriv,
+          Type = derivType,
+          Model = model,
+          Position = position,
+          Nominal = nominal
+        )
+      
       
       output$masterView <- DT::renderDT({
-        DT::datatable(r$masterTable) ## update display table
+        DT::datatable(r$viewTable,
+                      options = list(paging = FALSE,
+                                     dom = "ft"
+                      )
+                      ) ## update display table
       })
+      
+      ## RESET VALUES (AFTER APPENDING TABLES)
+      params$pos <- 0
+      params$deriv <- 0  
+      params$derivType <- 0  
+      params$model <- 0  
+      params$position <- 0  
+      params$nominal <- 0  
+      params$spot <- 0  
+      params$strike <- 0  
+      params$t2m <- 0  
+      params$sigma <- 0  
+      params$costCarry <- 0  
+      params$upFactor <- 0  
+      params$downFactor <- 0  
+      params$prob <- 0  
+      params$steps <- 0  
+      params$rForeign <- 0  
+      params$rDomestic <- 0  
+      params$r1 <- 0  
+      params$r2 <- 0  
+      params$t1 <- 0  
+      params$t2 <- 0  
+      params$fixSpot <- 0  
+      params$floatSpot <- 0  
+      params$fixRate <- 0  
+      params$floatRate <- 0  
+      
+      
         
     })
     
@@ -274,7 +322,11 @@ mod_creationZone_server <- function(id, r){
     ## OBSERVERS <START>
     
     shiny::observeEvent(input$posName_text, {
-      params$asset <- input$posName_text
+      if (input$posName_text == ""){
+        params$pos <- paste(sample(randomNames,1),"-",sample(1:1000, 1)) ## Automatically Create Name (ASK PHIL WHAT IS CAUSING THIS ERROR)
+      } else{
+        params$pos <- input$posName_text
+      }
     })
     
     shiny::observeEvent(input$deriv_select, {
@@ -302,11 +354,22 @@ mod_creationZone_server <- function(id, r){
     ## OUTPUTS <START>
     
     observe({
-      r$placeHolder <- dplyr::tibble(ty = c("Position","Derivative", "Type", "Model", "Position", "Nominal"), val = c("None", "None", "None", "None", "None", "None"))
+      r$placeHolder <- dplyr::tibble(
+        Name = "None",
+        Derviative = "None",
+        Type = "None",
+        Model = "None",
+        Position = "None",
+        Nominal = 0
+      )
     })
     
     output$masterView <- DT::renderDT({
-      DT::datatable(r$placeHolder) ## init viewable table
+      DT::datatable(r$placeHolder,
+                    options = list(paging = FALSE,
+                                   dom = "ft"
+                                   )
+                    ) ## init viewable table
     })
     
     output$derivParams1 <- shiny::renderUI({
