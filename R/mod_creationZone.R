@@ -319,23 +319,20 @@ mod_creationZone_server <- function(id, r){
       if (selected_model %in% names(model_functions)) {
         
         function_name <- model_functions[[selected_model]]
-        print(function_name) ## TO BE REMOVED
         required_params <- param_map[[selected_model]]
-        print(required_params) ## TO BE REMOVED
         model_params <- lapply(required_params, function(param) params[[param]])
-        
-        print(model_params)
-        
-        result <- do.call(get(function_name), model_params)
-        print(result)
-        
+        payoffResult <- do.call(get(function_name), model_params)
       } else {
-        
         print("Invalid model selection")
-        
       }
       
-      print(params$spot)
+      if (is.null(r$payoffTable)) {
+        r$payoffTable <- payoffResult  ## Initialize Payoff Tables
+      } else {
+        r$payoffTable <- dplyr::left_join(r$payoffTable, payoffResult, by="Spot")
+      }
+      
+      print(r$payoffTable)
       
       
       # ## RESET VALUES (AFTER APPENDING TABLES)
