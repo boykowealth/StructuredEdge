@@ -120,7 +120,7 @@ mod_creationZone_server <- function(id, r){
         # (NO small r pass - only used in filters on this page)
     
     df.params <- dplyr::tibble(
-      Param = c("Spot Price", "Strike Price", "Time to Maturity", "Risk-Free Interest Rate", "Volatility",
+      Param = c("Spot Price", "Strike Price", "Time to Maturity", "Risk Free Interest Rate", "Volatility",
                 "Cost of Carry", "Up Factor", "Down Factor", "Probability", "Steps",
                 "Foreign Rate", "Domestic Rate", "Rate T1", "Rate T2", "Time 1", "Time 2",
                 "Fixed Spot", "Floating Spot", "Fixed Rate", "Floating Rate"),
@@ -319,10 +319,12 @@ mod_creationZone_server <- function(id, r){
       if (selected_model %in% names(model_functions)) {
         
         function_name <- model_functions[[selected_model]]
-        print(function_name)
+        print(function_name) ## TO BE REMOVED
         required_params <- param_map[[selected_model]]
-        
+        print(required_params) ## TO BE REMOVED
         model_params <- lapply(required_params, function(param) params[[param]])
+        
+        print(model_params)
         
         result <- do.call(get(function_name), model_params)
         print(result)
@@ -333,33 +335,35 @@ mod_creationZone_server <- function(id, r){
         
       }
       
+      print(params$spot)
       
-      ## RESET VALUES (AFTER APPENDING TABLES)
-      params$pos <- 0
-      params$deriv <- 0  
-      params$derivType <- 0  
-      params$model <- 0  
-      params$position <- 0  
-      params$nominal <- 0  
-      params$spot <- 0  
-      params$strike <- 0  
-      params$t2m <- 0  
-      params$sigma <- 0  
-      params$costCarry <- 0  
-      params$upFactor <- 0  
-      params$downFactor <- 0  
-      params$prob <- 0  
-      params$steps <- 0  
-      params$rForeign <- 0  
-      params$rDomestic <- 0  
-      params$r1 <- 0  
-      params$r2 <- 0  
-      params$t1 <- 0  
-      params$t2 <- 0  
-      params$fixSpot <- 0  
-      params$floatSpot <- 0  
-      params$fixRate <- 0  
-      params$floatRate <- 0  
+      
+      # ## RESET VALUES (AFTER APPENDING TABLES)
+      # params$pos <- 0
+      # params$deriv <- 0  
+      # params$derivType <- 0  
+      # params$model <- 0  
+      # params$position <- 0  
+      # params$nominal <- 0  
+      # params$spot <- 0  
+      # params$strike <- 0  
+      # params$t2m <- 0  
+      # params$sigma <- 0  
+      # params$costCarry <- 0  
+      # params$upFactor <- 0  
+      # params$downFactor <- 0  
+      # params$prob <- 0  
+      # params$steps <- 0  
+      # params$rForeign <- 0  
+      # params$rDomestic <- 0  
+      # params$r1 <- 0  
+      # params$r2 <- 0  
+      # params$t1 <- 0  
+      # params$t2 <- 0  
+      # params$fixSpot <- 0  
+      # params$floatSpot <- 0  
+      # params$fixRate <- 0  
+      # params$floatRate <- 0  
     
       
         
@@ -397,6 +401,87 @@ mod_creationZone_server <- function(id, r){
       params$nominal <- input$nominal_num
     })
     
+    shiny::observeEvent(input$SpotPrice_value, {
+      params$spot <- input$SpotPrice_value
+    })
+    
+    shiny::observeEvent(input$StrikePrice_value, {
+      params$strike <- input$strike_value
+    })
+    
+    shiny::observeEvent(input$TimetoMaturity_value, {
+      params$t2m <- input$TimetoMaturity_value
+    })
+    
+    shiny::observeEvent(input$RiskFreeInterestRate_value, {
+      params$rf <- input$RiskFreeInterestRate_value
+    })
+    
+    shiny::observeEvent(input$Volatility_value, {
+      params$sigma <- input$Volatility_value
+    })
+    
+    shiny::observeEvent(input$CostofCarry_value, {
+      params$costCarry <- input$CostofCarry_value
+    })
+    
+    shiny::observeEvent(input$UpFactor_value, {
+      params$upFactor <- input$UpFactor_value
+    })
+    
+    shiny::observeEvent(input$DownFactor_value, {
+      params$downFactor <- input$DownFactor_value
+    })
+    
+    shiny::observeEvent(input$Probability_value, {
+      params$prob <- input$Probability_value
+    })
+    
+    shiny::observeEvent(input$Steps_value, {
+      params$steps <- input$Steps_value
+    })
+    
+    shiny::observeEvent(input$ForeignRate_value, {
+      params$rForeign <- input$ForeignRate_value
+    })
+    
+    shiny::observeEvent(input$DomesticRate_value, {
+      params$rDomestic <- input$DomesticRate_value
+    })
+    
+    shiny::observeEvent(input$RateT1_value, {
+      params$r1 <- input$Ratet1_value
+    })
+    
+    shiny::observeEvent(input$RateT2_value, {
+      params$r2 <- input$RateT2_value
+    })
+    
+    shiny::observeEvent(input$Time1_value, {
+      params$t1 <- input$Time1_value
+    })
+    
+    shiny::observeEvent(input$Time2_value, {
+      params$t2 <- input$Time2_value
+    })
+    
+    shiny::observeEvent(input$FixedSpot_value, {
+      params$fixSpot <- input$FixedSpot_value
+    })
+    
+    shiny::observeEvent(input$FloatingSpot_value, {
+      params$floatSpot <- input$FloatingSpot_value
+    })
+    
+    shiny::observeEvent(input$FixedRate_value, {
+      params$fixRate <- input$FixedRate_value
+    })
+    
+    shiny::observeEvent(input$FloatingRate_value, {
+      params$floatRate <- input$FloatingRate_value
+    })
+    
+    
     ## OBSERVER <END>
     
     ## OUTPUTS <START>
@@ -420,40 +505,45 @@ mod_creationZone_server <- function(id, r){
                     ) ## init viewable table
     })
     
+        ## AUTO GENERATING PARAMETER VALUE BOXES <START>
+    
     output$derivParams1 <- shiny::renderUI({
       params <- list.params()
-      half <- ceiling(length(params) / 2) ## Used in spliting list
+      half <- ceiling(length(params) / 2) ## Used in splitting list
       params_left <- params[1:half] ## Splits front half of list
+      params_left_clean <- lapply(params_left, function(x) gsub(" ", "", x)) ## Creates standard naming convention
       
-      
-      lapply(params_left, function(param) {
+      mapply(function(clean_param, original_param) {
         shiny::numericInput(
-          inputId = ns(paste0("input_", param)),
-          label = paste(param, ":"),
+          inputId = ns(paste0(clean_param, "_value")), # Use cleaned names for inputId
+          label = paste(original_param, ":"),         # Use original names for label
           value = 0,
           min = 0,
           step = 0.01,
           width = "80%"
         )
-      })
+      }, params_left_clean, params_left, SIMPLIFY = FALSE)
     })
     
     output$derivParams2 <- shiny::renderUI({
       params <- list.params()
       half <- ceiling(length(params) / 2) ## Used in spliting list
       params_right <- params[(half + 1):length(params)] ## Splits back half of list
+      params_right_clean <- lapply(params_right, function(x) gsub(" ", "", x)) ## Creates standard naming convention
       
-      lapply(params_right, function(param) {
+      mapply(function(clean_param, original_param) {
         shiny::numericInput(
-          inputId = ns(paste0("input_", param)),
-          label = paste(param, ":"),
+          inputId = ns(paste0(clean_param, "_value")), # Use cleaned names for inputId
+          label = paste(original_param, ":"),         # Use original names for label
           value = 0,
           min = 0,
           step = 0.01,
           width = "80%"
         )
-      })
+      }, params_right_clean, params_right, SIMPLIFY = FALSE)
     })
+        
+        ## AUTO GENERATING PARAMETER VALUE BOXES <END> 
     
     output$models <- shiny::renderUI({
       
