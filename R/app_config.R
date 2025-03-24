@@ -8,6 +8,8 @@
 #' within your package. The default, none, returns the root of the app.
 #'
 #' @noRd
+#' @useDynLib StructuredEdge, .registration = TRUE
+#' 
 app_sys <- function(...) {
   system.file(..., package = "StructuredEdge")
 }
@@ -31,7 +33,7 @@ library(dplyr)
 library(Rcpp)
 library(DT)
 
-Rcpp::sourceCpp(normalizePath("src/blackScholes.cpp"))
+Rcpp::sourceCpp("src/blackScholes.cpp")
 Rcpp::sourceCpp("src/binomialTree.cpp")
 Rcpp::sourceCpp("src/financialForward.cpp")
 Rcpp::sourceCpp("src/physicalForward.cpp")

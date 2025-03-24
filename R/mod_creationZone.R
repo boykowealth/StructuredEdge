@@ -5,6 +5,7 @@
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
 #' @noRd 
+#' @useDynLib StructuredEdge, .registration = TRUE
 #'
 #' @importFrom shiny NS tagList 
 mod_creationZone_ui <-  function(id){
