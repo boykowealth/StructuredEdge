@@ -31,12 +31,13 @@ library(dplyr)
 library(Rcpp)
 library(DT)
 
-Rcpp::sourceCpp("src/blackScholes.cpp")
+Rcpp::sourceCpp(normalizePath("src/blackScholes.cpp"))
 Rcpp::sourceCpp("src/binomialTree.cpp")
 Rcpp::sourceCpp("src/financialForward.cpp")
 Rcpp::sourceCpp("src/physicalForward.cpp")
 Rcpp::sourceCpp("src/irForward.cpp")
-
+Rcpp::sourceCpp("src/excForward.cpp")
+Rcpp::sourceCpp("src/physicalSwap.cpp")
 
 get_golem_config <- function(
   value,

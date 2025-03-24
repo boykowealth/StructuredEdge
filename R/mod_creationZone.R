@@ -114,7 +114,7 @@ mod_creationZone_server <- function(id, r){
   moduleServer(id, function(input, output, session){
     
     ns <- session$ns
-    
+
     ## DATAFRAMES LOCAL <START>
         # (NO small r pass - only used in filters on this page)
     
@@ -157,7 +157,7 @@ mod_creationZone_server <- function(id, r){
       Swap = c(0, 0, 1, 1, 0),
       Asset = c(0, 0, 0, 0, 1)
     )
-
+    
     ## DATAFRAMES LOCAL <END>
     
     ## DATAFRAMES GLOBAL <START>
@@ -183,6 +183,7 @@ mod_creationZone_server <- function(id, r){
       spot = 0,
       strike = 0,
       t2m = 0,
+      rf = 0,
       sigma = 0,
       costCarry = 0,
       upFactor = 0,
@@ -223,7 +224,8 @@ mod_creationZone_server <- function(id, r){
         dplyr::select(Type, dplyr::all_of(params$deriv)) %>% 
         dplyr::filter(!!rlang::sym(params$deriv) == 1) %>% 
         dplyr::pull(Type)   # Extract the "Model" column as a vector
-    })    
+    })
+    
     
     ## LISTS <END>
     
@@ -242,6 +244,7 @@ mod_creationZone_server <- function(id, r){
           spot = params$spot,
           strike = params$strike,
           t2m = params$t2m,
+          rf = params$rf,
           sigma = params$sigma,
           costCarry = params$costCarry,
           upFactor = params$upFactor,
@@ -286,6 +289,50 @@ mod_creationZone_server <- function(id, r){
                       ) ## update display table
       })
       
+      
+      ## CREATE PAYOFFS
+      selected_model <- params$model
+      
+          ### list of available pricing models
+      model_functions <- list(
+        "Black-Scholes" = "blackScholes",
+        "Binomial Tree" = "binomialTree",
+        "Financial Forward" = "finForwardContract",
+        "Commodity Forward" = "physForwardContract",
+        "Forward Rate Agreement" = "irForward",
+        "Exchange Rate Forward" = "exchangeForward",
+        "Commodity Swap" = "physicalSwap"
+      )
+      
+          ### list of parameters per model
+      param_map <- list(
+        "Black-Scholes" = c("spot", "strike", "t2m", "rf", "sigma", "costCarry"),
+        "Binomial Tree" = c("spot", "strike", "t2m", "rf", "upFactor", "downFactor", "prob", "steps"),
+        "Financial Forward" = c("spot", "t2m", "rf"),
+        "Commodity Forward" = c("spot", "t2m", "rf", "costCarry"),
+        "Forward Rate Agreement" = c("r1", "r2", "t1", "t2"),
+        "Exchange Rate Forward" = c("spot", "t2m", "rdomestic", "rforeign"),
+        "Commodity Swap" = c("nominal", "fixedSpot", "floatSpot")
+      )
+      
+      if (selected_model %in% names(model_functions)) {
+        
+        function_name <- model_functions[[selected_model]]
+        print(function_name)
+        required_params <- param_map[[selected_model]]
+        
+        model_params <- lapply(required_params, function(param) params[[param]])
+        
+        result <- do.call(get(function_name), model_params)
+        print(result)
+        
+      } else {
+        
+        print("Invalid model selection")
+        
+      }
+      
+      
       ## RESET VALUES (AFTER APPENDING TABLES)
       params$pos <- 0
       params$deriv <- 0  
@@ -312,7 +359,7 @@ mod_creationZone_server <- function(id, r){
       params$floatSpot <- 0  
       params$fixRate <- 0  
       params$floatRate <- 0  
-      
+    
       
         
     })
