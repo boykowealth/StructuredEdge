@@ -1,22 +1,23 @@
 #include <Rcpp.h>
 #include <cmath>
 #include <vector>
+#include <string>
 
 using namespace Rcpp;
 
 // Function for binomial tree option pricing
-double binomial_tree_price(char option_type, double S, double K, double T, double r, double u, double d, double p, int steps) {
+double binomial_tree_price(std::string option_type, double S, double K, double T, double r, double u, double d, double p, int steps) {
   std::vector<double> option_values(steps + 1, 0.0);
   
   // Compute terminal option prices
   for (int i = 0; i <= steps; ++i) {
     double stock_price = S * std::pow(u, steps - i) * std::pow(d, i);
-    if (option_type == 'C' || option_type == 'c') {
-      option_values[i] = std::max(0.0, stock_price - K);
-    } else if (option_type == 'P' || option_type == 'p') {
-      option_values[i] = std::max(0.0, K - stock_price);
+    if (option_type == "Call" || option_type == "call") {
+      option_values[i] = std::max(0.0, stock_price - K); // Terminal payoff for Call
+    } else if (option_type == "Put" || option_type == "put") {
+      option_values[i] = std::max(0.0, K - stock_price); // Terminal payoff for Put
     } else {
-      Rcpp::stop("Invalid option type. Use 'C' for Call or 'P' for Put.");
+      Rcpp::stop("Invalid option type. Use 'Call' for Call or 'Put' for Put.");
     }
   }
   
@@ -27,26 +28,35 @@ double binomial_tree_price(char option_type, double S, double K, double T, doubl
     }
   }
   
-  return option_values[0];
+  return option_values[0]; // Return the option price at the root node
 }
 
 // [[Rcpp::export]]
-DataFrame binomialTree(double S, double K, double T, double r, double u, double d, double p, int steps) {
-  double S_min = S * 0.8;
-  double S_max = S * 1.2;
-  double S_step = 0.5;
+DataFrame binomialTree(double S, double K, double T, double r, double u, double d, double p, int steps, std::string option_type, std::string position_str, double nominal) {
+  // Convert position input to 1 for "Long" and -1 for "Short"
+  int position;
+  if (position_str == "Long" || position_str == "long") {
+    position = 1; // Long position
+  } else if (position_str == "Short" || position_str == "short") {
+    position = -1; // Short position
+  } else {
+    Rcpp::stop("Invalid position. Use 'Long' for long position or 'Short' for short position.");
+  }
   
-  std::vector<double> spot_prices, call_prices, put_prices;
+  double S_min = S * 0.0;  // Start at 0% of the original spot price
+  double S_max = S * 2.0;  // Range up to 200% of the original spot price
+  double S_step = 0.01;    // Divide range into small increments
+  
+  std::vector<double> normalized_spots, binomial_tree_prices;
   
   for (double S_curr = S_min; S_curr <= S_max; S_curr += S_step) {
-    spot_prices.push_back(S_curr);
-    call_prices.push_back(binomial_tree_price('C', S_curr, K, T, r, u, d, p, steps));
-    put_prices.push_back(binomial_tree_price('P', S_curr, K, T, r, u, d, p, steps));
+    double normalized_spot = (S_curr / S) - 1.0; // Calculate decimal deviation from original spot
+    normalized_spots.push_back(normalized_spot);
+    binomial_tree_prices.push_back(position * nominal * binomial_tree_price(option_type, S_curr, K, T, r, u, d, p, steps)); // Adjusted by position
   }
   
   return DataFrame::create(
-    _["Spot"] = spot_prices,
-    _["Call"] = call_prices,
-    _["Put"] = put_prices
+    _["Spot"] = normalized_spots,
+    _["Price"] = binomial_tree_prices
   );
 }

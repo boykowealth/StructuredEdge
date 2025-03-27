@@ -11,8 +11,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // binomialTree
-DataFrame binomialTree(double S, double K, double T, double r, double u, double d, double p, int steps);
-RcppExport SEXP _StructuredEdge_binomialTree(SEXP SSEXP, SEXP KSEXP, SEXP TSEXP, SEXP rSEXP, SEXP uSEXP, SEXP dSEXP, SEXP pSEXP, SEXP stepsSEXP) {
+DataFrame binomialTree(double S, double K, double T, double r, double u, double d, double p, int steps, std::string option_type, std::string position_str, double nominal);
+RcppExport SEXP _StructuredEdge_binomialTree(SEXP SSEXP, SEXP KSEXP, SEXP TSEXP, SEXP rSEXP, SEXP uSEXP, SEXP dSEXP, SEXP pSEXP, SEXP stepsSEXP, SEXP option_typeSEXP, SEXP position_strSEXP, SEXP nominalSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -24,13 +24,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type d(dSEXP);
     Rcpp::traits::input_parameter< double >::type p(pSEXP);
     Rcpp::traits::input_parameter< int >::type steps(stepsSEXP);
-    rcpp_result_gen = Rcpp::wrap(binomialTree(S, K, T, r, u, d, p, steps));
+    Rcpp::traits::input_parameter< std::string >::type option_type(option_typeSEXP);
+    Rcpp::traits::input_parameter< std::string >::type position_str(position_strSEXP);
+    Rcpp::traits::input_parameter< double >::type nominal(nominalSEXP);
+    rcpp_result_gen = Rcpp::wrap(binomialTree(S, K, T, r, u, d, p, steps, option_type, position_str, nominal));
     return rcpp_result_gen;
 END_RCPP
 }
 // blackScholes
-DataFrame blackScholes(double S, double K, double T, double r, double sigma, double b);
-RcppExport SEXP _StructuredEdge_blackScholes(SEXP SSEXP, SEXP KSEXP, SEXP TSEXP, SEXP rSEXP, SEXP sigmaSEXP, SEXP bSEXP) {
+DataFrame blackScholes(double S, double K, double T, double r, double sigma, double b, std::string option_type, std::string position_str, double nominal);
+RcppExport SEXP _StructuredEdge_blackScholes(SEXP SSEXP, SEXP KSEXP, SEXP TSEXP, SEXP rSEXP, SEXP sigmaSEXP, SEXP bSEXP, SEXP option_typeSEXP, SEXP position_strSEXP, SEXP nominalSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -40,7 +43,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type r(rSEXP);
     Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
     Rcpp::traits::input_parameter< double >::type b(bSEXP);
-    rcpp_result_gen = Rcpp::wrap(blackScholes(S, K, T, r, sigma, b));
+    Rcpp::traits::input_parameter< std::string >::type option_type(option_typeSEXP);
+    Rcpp::traits::input_parameter< std::string >::type position_str(position_strSEXP);
+    Rcpp::traits::input_parameter< double >::type nominal(nominalSEXP);
+    rcpp_result_gen = Rcpp::wrap(blackScholes(S, K, T, r, sigma, b, option_type, position_str, nominal));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -59,37 +65,39 @@ BEGIN_RCPP
 END_RCPP
 }
 // finForwardContract
-DataFrame finForwardContract(double S, double T, double r);
-RcppExport SEXP _StructuredEdge_finForwardContract(SEXP SSEXP, SEXP TSEXP, SEXP rSEXP) {
+DataFrame finForwardContract(double S, double T, double r, std::string position_str, double nominal);
+RcppExport SEXP _StructuredEdge_finForwardContract(SEXP SSEXP, SEXP TSEXP, SEXP rSEXP, SEXP position_strSEXP, SEXP nominalSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type S(SSEXP);
     Rcpp::traits::input_parameter< double >::type T(TSEXP);
     Rcpp::traits::input_parameter< double >::type r(rSEXP);
-    rcpp_result_gen = Rcpp::wrap(finForwardContract(S, T, r));
+    Rcpp::traits::input_parameter< std::string >::type position_str(position_strSEXP);
+    Rcpp::traits::input_parameter< double >::type nominal(nominalSEXP);
+    rcpp_result_gen = Rcpp::wrap(finForwardContract(S, T, r, position_str, nominal));
     return rcpp_result_gen;
 END_RCPP
 }
 // irForward
-DataFrame irForward(double r1, double t1, double t2, double t_min, double t_max, double t_step);
-RcppExport SEXP _StructuredEdge_irForward(SEXP r1SEXP, SEXP t1SEXP, SEXP t2SEXP, SEXP t_minSEXP, SEXP t_maxSEXP, SEXP t_stepSEXP) {
+DataFrame irForward(double r1, double r2, double t1, double t2, double notional, std::string position_str);
+RcppExport SEXP _StructuredEdge_irForward(SEXP r1SEXP, SEXP r2SEXP, SEXP t1SEXP, SEXP t2SEXP, SEXP notionalSEXP, SEXP position_strSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type r1(r1SEXP);
+    Rcpp::traits::input_parameter< double >::type r2(r2SEXP);
     Rcpp::traits::input_parameter< double >::type t1(t1SEXP);
     Rcpp::traits::input_parameter< double >::type t2(t2SEXP);
-    Rcpp::traits::input_parameter< double >::type t_min(t_minSEXP);
-    Rcpp::traits::input_parameter< double >::type t_max(t_maxSEXP);
-    Rcpp::traits::input_parameter< double >::type t_step(t_stepSEXP);
-    rcpp_result_gen = Rcpp::wrap(irForward(r1, t1, t2, t_min, t_max, t_step));
+    Rcpp::traits::input_parameter< double >::type notional(notionalSEXP);
+    Rcpp::traits::input_parameter< std::string >::type position_str(position_strSEXP);
+    rcpp_result_gen = Rcpp::wrap(irForward(r1, r2, t1, t2, notional, position_str));
     return rcpp_result_gen;
 END_RCPP
 }
 // physForwardContract
-DataFrame physForwardContract(double S, double T, double r, double c);
-RcppExport SEXP _StructuredEdge_physForwardContract(SEXP SSEXP, SEXP TSEXP, SEXP rSEXP, SEXP cSEXP) {
+DataFrame physForwardContract(double S, double T, double r, double c, std::string position_str, double nominal);
+RcppExport SEXP _StructuredEdge_physForwardContract(SEXP SSEXP, SEXP TSEXP, SEXP rSEXP, SEXP cSEXP, SEXP position_strSEXP, SEXP nominalSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -97,7 +105,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type T(TSEXP);
     Rcpp::traits::input_parameter< double >::type r(rSEXP);
     Rcpp::traits::input_parameter< double >::type c(cSEXP);
-    rcpp_result_gen = Rcpp::wrap(physForwardContract(S, T, r, c));
+    Rcpp::traits::input_parameter< std::string >::type position_str(position_strSEXP);
+    Rcpp::traits::input_parameter< double >::type nominal(nominalSEXP);
+    rcpp_result_gen = Rcpp::wrap(physForwardContract(S, T, r, c, position_str, nominal));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -116,12 +126,12 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_StructuredEdge_binomialTree", (DL_FUNC) &_StructuredEdge_binomialTree, 8},
-    {"_StructuredEdge_blackScholes", (DL_FUNC) &_StructuredEdge_blackScholes, 6},
+    {"_StructuredEdge_binomialTree", (DL_FUNC) &_StructuredEdge_binomialTree, 11},
+    {"_StructuredEdge_blackScholes", (DL_FUNC) &_StructuredEdge_blackScholes, 9},
     {"_StructuredEdge_exchangeForward", (DL_FUNC) &_StructuredEdge_exchangeForward, 4},
-    {"_StructuredEdge_finForwardContract", (DL_FUNC) &_StructuredEdge_finForwardContract, 3},
+    {"_StructuredEdge_finForwardContract", (DL_FUNC) &_StructuredEdge_finForwardContract, 5},
     {"_StructuredEdge_irForward", (DL_FUNC) &_StructuredEdge_irForward, 6},
-    {"_StructuredEdge_physForwardContract", (DL_FUNC) &_StructuredEdge_physForwardContract, 4},
+    {"_StructuredEdge_physForwardContract", (DL_FUNC) &_StructuredEdge_physForwardContract, 6},
     {"_StructuredEdge_physicalSwap", (DL_FUNC) &_StructuredEdge_physicalSwap, 3},
     {NULL, NULL, 0}
 };
