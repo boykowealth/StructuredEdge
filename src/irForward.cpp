@@ -27,7 +27,7 @@ DataFrame irForward(double r1, double r2, double t1, double t2, double nominal, 
   // Range of rates (relative deviations)
   double r_min = r1 * 0;  // Start at 50% of initial rate
   double r_max = r1 * 2.0001;  // Range up to 200% of initial rate
-  double r_step = 0.000005;     // One bps
+  double r_step = 0.000005;
   
   std::vector<double> normalized_rates, fra_values;
   
