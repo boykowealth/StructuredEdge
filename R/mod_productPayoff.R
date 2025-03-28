@@ -9,9 +9,10 @@
 #' @importFrom shiny NS tagList 
 mod_productPayoff_ui <- function(id) {
   ns <- NS(id)
-  tagList(
-    
-    shiny::uiOutput(ns("test")),
+  
+  bslib::card(
+    bslib::card_header("Product Payoff"),
+    shiny::plotOutput(ns("prodPayoff"))
   )
 }
     
@@ -22,23 +23,28 @@ mod_productPayoff_server <- function(id, r){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
     
-    output$test <- shiny::renderUI({
+    output$prodPayoff <- shiny::renderPlot({
+      df <- r$productTable %>% 
+        tidyr::drop_na()
       
-      models <- r$userTable$type
-      
-      shiny::selectInput(
-        inputId = ns("pricing_select"),
-        label = "Pricing Model:",
-        choices = models,
-        selected = models[1],
-        multiple = FALSE,
-        selectize = FALSE,
-        width = "80%"
-      )
-      
+      ggplot2::ggplot(df, ggplot2::aes(x = Spot, y = Product)) +
+        ggplot2::geom_smooth(color = "#193244") +
+        ggplot2::labs(
+          title = "",
+          x = "Underlying Change (Percentage)",
+          y = "Product P&L",
+        ) +
+        ggplot2::geom_hline(yintercept = 0, color = "#193244", size = 0.3) +
+        ggplot2::geom_vline(xintercept = 0, color = "#193244", size = 0.3) +
+        ggplot2::theme(
+          panel.background = ggplot2::element_rect(fill = "#ededeb", color = NA),
+          plot.background = ggplot2::element_rect(fill = "#ededeb", color = NA),
+          panel.grid.major = ggplot2::element_line(color = "#193244", size = 0.3, linetype = "dotted"),
+          axis.text = ggplot2::element_text(color = "#193244"),
+          axis.title = ggplot2::element_text(color = "#193244"),
+          panel.border = ggplot2::element_rect(color = "#193244", fill = NA, size = 0.3)
+        )
     })
-    
-    
  
   })
 }

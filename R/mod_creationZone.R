@@ -100,7 +100,6 @@ mod_creationZone_ui <-  function(id){
     ## PORTFOLIO MANAGEMNT - RIGHT <START>
     bslib::card(
       bslib::card_header("Product Positions"),
-      shiny::p("Test"),
       DT::DTOutput(ns("masterView"))
     )
     ## PORTFOLIO MANAGEMNT - RIGHT <END>
@@ -131,11 +130,11 @@ mod_creationZone_server <- function(id, r){
       `Commodity Forward` = c(0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
       `Forward Rate Agreement` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
       `Exchange Rate Forward` = c(0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-      `Commodity Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0),
-      `Interest Rate Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0),
-      `Exchange Rate Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0),
-      `Credit Default Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1),
-      `Variance Swap` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0),
+      `Commodity Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      `Interest Rate Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0),
+      `Exchange Rate Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0),
+      `Credit Default Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1),
+      `Variance Swap` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0),
       `Auto` = c(0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
     )
     
@@ -148,7 +147,7 @@ mod_creationZone_server <- function(id, r){
       ),
       Option = c(1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
       Forward = c(0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0),
-      Swap = c(0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0),
+      Swap = c(0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0),
       Asset = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
     )
     
@@ -298,8 +297,6 @@ mod_creationZone_server <- function(id, r){
           Nominal = nominal
         )
       
-      print(r$viewTable)
-      
       output$masterView <- DT::renderDT({
         DT::datatable(r$viewTable,
                       options = list(paging = FALSE,
@@ -321,7 +318,7 @@ mod_creationZone_server <- function(id, r){
         "Forward Rate Agreement" = "irForward",
         "Exchange Rate Forward" = "exchangeForward",
         "Commodity Swap" = "physicalSwap",
-        "Interest Rate Swap" = "financialSwap",
+        "Interest Rate Swap" = "interestRateSwap",
         "Exchange Rate Swap" = "exchangeRateSwap", 
         "Credit Default Swap" = "creditDefaultSwap", 
         "Variance Swap" = "varianceSwap"
@@ -335,20 +332,20 @@ mod_creationZone_server <- function(id, r){
         "Financial Forward" = c("spot", "t2m", "rf", "position", "nominal"), ## WORKING :)
         "Commodity Forward" = c("spot", "t2m", "rf", "costCarry", "position", "nominal"), ## WORKING :)
         "Forward Rate Agreement" = c("r1", "r2", "t1", "t2", "nominal", "position"), ## WORKING :)
-        "Exchange Rate Forward" = c("spot", "t2m", "rdomestic", "rforeign"),
-        "Commodity Swap" = c("nominal", "fixedSpot", "floatSpot")
+        "Exchange Rate Forward" = c("spot", "t2m", "rDomestic", "rForeign", "position", "nominal"), ## WORKING :)
+        "Commodity Swap" = c("fixSpot", "t2m", "floatSpot", "rf", "position", "nominal"), ## WORKING :) -> Check Number of Rows
+        "Interest Rate Swap" = c("fixRate", "t2m", "floatRate", "rf", "position", "nominal"), ## WORKING :)
+        "Exchange Rate Swap" = c("fixExcRate", "t2m", "floatExcRate", "rf", "position", "nominal"), ## WORKING :)
+        "Credit Default Swap" = c("creditSpread", "prob", "recovRate", "t2m", "rf", "position", "nominal"), ## WORKING :)
+        "Variance Swap" = c("varStrike", "realVar", "position", "nominal") ## WORKING :)
       )
       
       if (selected_model %in% names(model_functions)) {
         
         function_name <- model_functions[[selected_model]]
-        print(function_name)
         required_params <- param_map[[selected_model]]
-        print(required_params)
         model_params <- lapply(required_params, function(param) params[[param]])
-        print(model_params)
         payoffResult <- do.call(get(function_name), model_params)
-        print(payoffResult)
       } else {
         print("Invalid model selection")
       }
@@ -359,7 +356,15 @@ mod_creationZone_server <- function(id, r){
         r$payoffTable <- dplyr::left_join(r$payoffTable, payoffResult, by="Spot")
       }
       
-      print(r$payoffTable)
+      #print(r$payoffTable)
+      
+      r$productTable <- r$payoffTable %>% 
+        dplyr::mutate(Product = rowSums(dplyr::across(-Spot))) %>% 
+        dplyr::select(Spot, Product)
+        
+      
+      print(r$productTable)
+      
       
         
     })
@@ -484,11 +489,13 @@ mod_creationZone_server <- function(id, r){
     })
     
     shiny::observeEvent(input$FixedExchangeRate_value, {
-      params$fixExchRate <- input$FixedExchangeRate_value
+      params$fixExcRate <- input$FixedExchangeRate_value
+      print(params$fixExcRate)
     })
     
     shiny::observeEvent(input$FloatExchangeRate_value, {
-      params$floatExchRate <- input$FloatExchangeRate_value
+      params$floatExcRate <- input$FloatExchangeRate_value
+      print(params$floatExcRate)
     })
     
     shiny::observeEvent(input$CreditSpread_value, {
