@@ -316,21 +316,21 @@ mod_creationZone_server <- function(id, r){
       model_functions <- list(
         "Black-Scholes" = "blackScholes",
         "Binomial Tree" = "binomialTree",
-        "Financial Forward" = "finForwardContract", ###FIX EARLY
+        "Financial Forward" = "finForwardContract",
         "Commodity Forward" = "physForwardContract",
         "Forward Rate Agreement" = "irForward",
         "Exchange Rate Forward" = "exchangeForward",
         "Commodity Swap" = "physicalSwap",
         "Interest Rate Swap" = "financialSwap",
-        "Exchange Rate Swap" = "excSwap", 
-        "Credit Default Swap" = "cds", 
-        "Variance Swap" = "varSwap"
+        "Exchange Rate Swap" = "exchangeRateSwap", 
+        "Credit Default Swap" = "creditDefaultSwap", 
+        "Variance Swap" = "varianceSwap"
         
       )
       
           ### list of parameters per model
       param_map <- list(
-        "Black-Scholes" = c("spot", "strike", "t2m", "rf", "sigma", "costCarry","derivType", "position", "nominal", "premium"),
+        "Black-Scholes" = c("spot", "strike", "t2m", "rf", "sigma", "costCarry","derivType", "position", "nominal", "premium"), ## WORKING :)
         "Binomial Tree" = c("spot", "strike", "t2m", "rf", "upFactor", "downFactor", "prob", "steps"),
         "Financial Forward" = c("spot", "t2m", "rf"),
         "Commodity Forward" = c("spot", "t2m", "rf", "costCarry"), ### FIX EARLY
