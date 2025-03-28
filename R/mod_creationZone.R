@@ -125,18 +125,18 @@ mod_creationZone_server <- function(id, r){
                 "Foreign Rate", "Domestic Rate", "Rate T1", "Rate T2", "Time 1", "Time 2", "Fixed Spot", 
                 "Floating Spot", "Fixed Rate", "Floating Rate", "Nominal Value", "Fixed Exchange Rate", 
                 "Float Exchange Rate", "Variance Strike", "Realized Variance", "Credit Spread", "Recovery Rate"),
-      `Black-Scholes` = c(1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0),
-      `Binomial Tree` = c(1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0),
-      `Financial Forward` = c(0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0),
-      `Commodity Forward` = c(0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0),
-      `Forward Rate Agreement` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0),
-      `Exchange Rate Forward` = c(0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0),
-      `Commodity Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0),
-      `Interest Rate Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0),
-      `Exchange Rate Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0),
-      `Credit Default Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1),
-      `Variance Swap` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0),
-      `Auto` = c(0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0)
+      `Black-Scholes` = c(1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      `Binomial Tree` = c(1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      `Financial Forward` = c(0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      `Commodity Forward` = c(0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      `Forward Rate Agreement` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      `Exchange Rate Forward` = c(0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      `Commodity Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0),
+      `Interest Rate Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0),
+      `Exchange Rate Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0),
+      `Credit Default Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1),
+      `Variance Swap` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0),
+      `Auto` = c(0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
     )
     
     
@@ -153,11 +153,11 @@ mod_creationZone_server <- function(id, r){
     )
     
     df.type <- dplyr::tibble(
-      Type = c("Call", "Put", "Fixed", "Float", "Auto"),
-      Option = c(1, 1, 0, 0, 0),
-      Forward = c(0, 0, 0, 0, 1),
-      Swap = c(0, 0, 1, 1, 0),
-      Asset = c(0, 0, 0, 0, 1)
+      Type = c("Call", "Put", "Auto"),
+      Option = c(1, 1, 0),
+      Forward = c(0, 0, 1),
+      Swap = c(0, 0, 1),
+      Asset = c(0, 0, 1)
     )
     
     ## DATAFRAMES LOCAL <END>
@@ -279,6 +279,8 @@ mod_creationZone_server <- function(id, r){
           recovRate = params$recovRate
           )
       
+      print(tmpTable)
+      
       if (is.null(r$masterTable)) {
         r$masterTable <- tmpTable  ## Initialize masterTable
       } else {
@@ -296,6 +298,7 @@ mod_creationZone_server <- function(id, r){
           Nominal = nominal
         )
       
+      print(r$viewTable)
       
       output$masterView <- DT::renderDT({
         DT::datatable(r$viewTable,
@@ -317,12 +320,17 @@ mod_creationZone_server <- function(id, r){
         "Commodity Forward" = "physForwardContract",
         "Forward Rate Agreement" = "irForward",
         "Exchange Rate Forward" = "exchangeForward",
-        "Commodity Swap" = "physicalSwap"
+        "Commodity Swap" = "physicalSwap",
+        "Interest Rate Swap" = "financialSwap",
+        "Exchange Rate Swap" = "excSwap", 
+        "Credit Default Swap" = "cds", 
+        "Variance Swap" = "varSwap"
+        
       )
       
           ### list of parameters per model
       param_map <- list(
-        "Black-Scholes" = c("spot", "strike", "t2m", "rf", "sigma", "costCarry"),
+        "Black-Scholes" = c("spot", "strike", "t2m", "rf", "sigma", "costCarry","derivType", "position", "nominal", "premium"),
         "Binomial Tree" = c("spot", "strike", "t2m", "rf", "upFactor", "downFactor", "prob", "steps"),
         "Financial Forward" = c("spot", "t2m", "rf"),
         "Commodity Forward" = c("spot", "t2m", "rf", "costCarry"), ### FIX EARLY
@@ -334,9 +342,13 @@ mod_creationZone_server <- function(id, r){
       if (selected_model %in% names(model_functions)) {
         
         function_name <- model_functions[[selected_model]]
+        print(function_name)
         required_params <- param_map[[selected_model]]
+        print(required_params)
         model_params <- lapply(required_params, function(param) params[[param]])
+        print(model_params)
         payoffResult <- do.call(get(function_name), model_params)
+        print(payoffResult)
       } else {
         print("Invalid model selection")
       }
@@ -348,35 +360,6 @@ mod_creationZone_server <- function(id, r){
       }
       
       print(r$payoffTable)
-      
-      
-      # ## RESET VALUES (AFTER APPENDING TABLES)
-      # params$pos <- 0
-      # params$deriv <- 0  
-      # params$derivType <- 0  
-      # params$model <- 0  
-      # params$position <- 0  
-      # params$nominal <- 0  
-      # params$spot <- 0  
-      # params$strike <- 0  
-      # params$t2m <- 0  
-      # params$sigma <- 0  
-      # params$costCarry <- 0  
-      # params$upFactor <- 0  
-      # params$downFactor <- 0  
-      # params$prob <- 0  
-      # params$steps <- 0  
-      # params$rForeign <- 0  
-      # params$rDomestic <- 0  
-      # params$r1 <- 0  
-      # params$r2 <- 0  
-      # params$t1 <- 0  
-      # params$t2 <- 0  
-      # params$fixSpot <- 0  
-      # params$floatSpot <- 0  
-      # params$fixRate <- 0  
-      # params$floatRate <- 0  
-    
       
         
     })
@@ -397,8 +380,9 @@ mod_creationZone_server <- function(id, r){
       params$deriv <- input$deriv_select
     })
     
-    shiny::observeEvent(input$derivType_select, {
-      params$derivType <- input$derivType_select
+    shiny::observeEvent(input$type_select, {
+      params$derivType <- input$type_select
+      print(params$derivType)
     })
     
     shiny::observeEvent(input$pricing_select, {
@@ -418,7 +402,8 @@ mod_creationZone_server <- function(id, r){
     })
     
     shiny::observeEvent(input$StrikePrice_value, {
-      params$strike <- input$strike_value
+      params$strike <- input$StrikePrice_value
+      print(params$strike)
     })
     
     shiny::observeEvent(input$TimetoMaturity_value, {
@@ -493,6 +478,33 @@ mod_creationZone_server <- function(id, r){
       params$floatRate <- input$FloatingRate_value
     })
     
+    shiny::observeEvent(input$Premium_value, {
+      params$premium <- input$Premium_value
+    })
+    
+    shiny::observeEvent(input$FixedExchangeRate_value, {
+      params$fixExchRate <- input$FixedExchangeRate_value
+    })
+    
+    shiny::observeEvent(input$FloatExchangeRate_value, {
+      params$floatExchRate <- input$FloatExchangeRate_value
+    })
+    
+    shiny::observeEvent(input$CreditSpread_value, {
+      params$creditSpread <- input$CreditSpread_value
+    })
+    
+    shiny::observeEvent(input$RecoveryRate_value, {
+      params$recovRate <- input$RecoveryRate_value
+    })
+    
+    shiny::observeEvent(input$VarianceStrike_value, {
+      params$varStrike <- input$VarianceStrike_value
+    })
+    
+    shiny::observeEvent(input$RealizedVariance_value, {
+      params$realVar <- input$RealizedVariance_value
+    })
     
     ## OBSERVER <END>
     
