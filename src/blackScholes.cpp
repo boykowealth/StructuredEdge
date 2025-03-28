@@ -25,7 +25,7 @@ double black_scholes_price(std::string option_type, double S, double K, double T
 }
 
 // [[Rcpp::export]]
-DataFrame blackScholes(double S, double K, double T, double r, double sigma, double b, std::string option_type, std::string position_str, double nominal) {
+DataFrame blackScholes(double S, double K, double T, double r, double sigma, double b, std::string option_type, std::string position_str, double nominal, double option_cost) {
   // Convert position input to 1 for "Long" and -1 for "Short"
   int position;
   if (position_str == "Long" || position_str == "long") {
@@ -38,14 +38,16 @@ DataFrame blackScholes(double S, double K, double T, double r, double sigma, dou
   
   double S_min = S * 0.0;  // Start at 0% of the original spot price
   double S_max = S * 2.0;  // Range up to 200% of the original spot price
-  double S_step = 0.01; // Divide range into bps
+  double S_step = 0.01;    // Divide range into small increments
   
   std::vector<double> normalized_spots, black_scholes_prices;
   
   for (double S_curr = S_min; S_curr <= S_max; S_curr += S_step) {
     double normalized_spot = (S_curr / S) - 1.0; // Calculate decimal deviation from original spot
     normalized_spots.push_back(normalized_spot);
-    black_scholes_prices.push_back(position * nominal * black_scholes_price(option_type, S_curr, K, T, r, sigma, b)); // Adjusted by position
+    double option_value = black_scholes_price(option_type, S_curr, K, T, r, sigma, b); // Option value from Black-Scholes formula
+    double net_value = (option_value - option_cost) * nominal * position; // Subtract the cost of the option
+    black_scholes_prices.push_back(net_value);
   }
   
   return DataFrame::create(

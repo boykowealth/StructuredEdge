@@ -32,7 +32,7 @@ double binomial_tree_price(std::string option_type, double S, double K, double T
 }
 
 // [[Rcpp::export]]
-DataFrame binomialTree(double S, double K, double T, double r, double u, double d, double p, int steps, std::string option_type, std::string position_str, double nominal) {
+DataFrame binomialTree(double S, double K, double T, double r, double u, double d, double p, int steps, std::string option_type, std::string position_str, double nominal, double option_cost) {
   // Convert position input to 1 for "Long" and -1 for "Short"
   int position;
   if (position_str == "Long" || position_str == "long") {
@@ -52,7 +52,9 @@ DataFrame binomialTree(double S, double K, double T, double r, double u, double 
   for (double S_curr = S_min; S_curr <= S_max; S_curr += S_step) {
     double normalized_spot = (S_curr / S) - 1.0; // Calculate decimal deviation from original spot
     normalized_spots.push_back(normalized_spot);
-    binomial_tree_prices.push_back(position * nominal * binomial_tree_price(option_type, S_curr, K, T, r, u, d, p, steps)); // Adjusted by position
+    double option_value = binomial_tree_price(option_type, S_curr, K, T, r, u, d, p, steps); // Option value from tree
+    double net_value = (option_value - option_cost) * nominal * position; // Subtract the cost of the option
+    binomial_tree_prices.push_back(net_value);
   }
   
   return DataFrame::create(

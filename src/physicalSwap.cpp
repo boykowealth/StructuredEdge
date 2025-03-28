@@ -29,7 +29,7 @@ DataFrame physicalSwap(double fixed_price, double period_length, double spot_pri
   // Range of spot prices
   double spot_price_min = spot_price * 0.0;
   double spot_price_max = spot_price * 2.0001;
-  double spot_price_step = 0.0001105;
+  double spot_price_step = 0.0001100028;
   
   std::vector<double> normalized_prices, swap_values;
   
