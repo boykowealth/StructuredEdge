@@ -120,35 +120,36 @@ mod_creationZone_server <- function(id, r){
         # (NO small r pass - only used in filters on this page)
     
     df.params <- dplyr::tibble(
-      Param = c("Spot Price", "Strike Price", "Time to Maturity", "Risk Free Interest Rate", "Volatility",
-                "Cost of Carry", "Up Factor", "Down Factor", "Probability", "Steps",
-                "Foreign Rate", "Domestic Rate", "Rate T1", "Rate T2", "Time 1", "Time 2",
-                "Fixed Spot", "Floating Spot", "Fixed Rate", "Floating Rate"),
-      `Black-Scholes` = c(1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-      `Binomial Tree` = c(1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-      `Financial Forward` = c(1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-      `Commodity Forward` = c(1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-      `Forward Rate Agreement` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0),
-      `Exchange Rate Forward` = c(1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0),
-      `Commodity Swap` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0),
-      `Interest Rate Swap` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1),
-      `Exchange Rate Swap` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1),
-      `Equity Swap` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0),
-      `Credit Default Swap` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1),
-      `Variance Swap` = c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1),
-      `Auto` = c(1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+      Param = c("Premium", "Spot Price", "Strike Price", "Time to Maturity", "Risk Free Interest Rate", 
+                "Volatility", "Cost of Carry", "Up Factor", "Down Factor", "Probability", "Steps", 
+                "Foreign Rate", "Domestic Rate", "Rate T1", "Rate T2", "Time 1", "Time 2", "Fixed Spot", 
+                "Floating Spot", "Fixed Rate", "Floating Rate", "Nominal Value", "Fixed Exchange Rate", 
+                "Float Exchange Rate", "Variance Strike", "Realized Variance", "Credit Spread", "Recovery Rate"),
+      `Black-Scholes` = c(1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0),
+      `Binomial Tree` = c(1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0),
+      `Financial Forward` = c(0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0),
+      `Commodity Forward` = c(0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0),
+      `Forward Rate Agreement` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0),
+      `Exchange Rate Forward` = c(0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0),
+      `Commodity Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0),
+      `Interest Rate Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0),
+      `Exchange Rate Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0),
+      `Credit Default Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1),
+      `Variance Swap` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0),
+      `Auto` = c(0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0)
     )
+    
     
     df.models <- dplyr::tibble(
       Model = c(
         "Black-Scholes", "Binomial Tree", "Financial Forward", "Commodity Forward",
         "Forward Rate Agreement", "Exchange Rate Forward", "Commodity Swap", "Interest Rate Swap",
-        "Exchange Rate Swap", "Equity Swap", "Credit Default Swap", "Variance Swap", "Auto"
+        "Exchange Rate Swap", "Credit Default Swap", "Variance Swap", "Auto"
       ),
-      Option = c(1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-      Forward = c(0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0),
-      Swap = c(0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0),
-      Asset = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
+      Option = c(1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      Forward = c(0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0),
+      Swap = c(0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0),
+      Asset = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
     )
     
     df.type <- dplyr::tibble(
@@ -176,6 +177,7 @@ mod_creationZone_server <- function(id, r){
     
     params <- shiny::reactiveValues(
       pos = 0,
+      premium = 0,
       deriv = 0,
       derivType = 0,
       model = 0,
@@ -200,7 +202,13 @@ mod_creationZone_server <- function(id, r){
       fixSpot = 0,
       floatSpot = 0,
       fixRate = 0,
-      floatRate = 0
+      floatRate = 0,
+      fixExcRate = 0,
+      floatExcRate = 0,
+      VarStike = 0,
+      realVar = 0,
+      creditSpread = 0,
+      recovRate = 0
     )
     
     list.params <- shiny::reactive({
@@ -242,6 +250,7 @@ mod_creationZone_server <- function(id, r){
           model = params$model,
           position = params$position,
           nominal = params$nominal,
+          premium = params$premium,
           spot = params$spot,
           strike = params$strike,
           t2m = params$t2m,
@@ -262,6 +271,12 @@ mod_creationZone_server <- function(id, r){
           floatSpot = params$floatSpot,
           fixRate = params$fixRate,
           floatRate = params$floatRate,
+          fixExcRate = params$fixExcRate,
+          floatExcRate = params$floatExcRate,
+          varStrike = params$varStrike,
+          realVar = params$realVar,
+          creditSpread = params$creditSpread,
+          recovRate = params$recovRate
           )
       
       if (is.null(r$masterTable)) {
@@ -298,7 +313,7 @@ mod_creationZone_server <- function(id, r){
       model_functions <- list(
         "Black-Scholes" = "blackScholes",
         "Binomial Tree" = "binomialTree",
-        "Financial Forward" = "finForwardContract",
+        "Financial Forward" = "finForwardContract", ###FIX EARLY
         "Commodity Forward" = "physForwardContract",
         "Forward Rate Agreement" = "irForward",
         "Exchange Rate Forward" = "exchangeForward",
@@ -310,7 +325,7 @@ mod_creationZone_server <- function(id, r){
         "Black-Scholes" = c("spot", "strike", "t2m", "rf", "sigma", "costCarry"),
         "Binomial Tree" = c("spot", "strike", "t2m", "rf", "upFactor", "downFactor", "prob", "steps"),
         "Financial Forward" = c("spot", "t2m", "rf"),
-        "Commodity Forward" = c("spot", "t2m", "rf", "costCarry"),
+        "Commodity Forward" = c("spot", "t2m", "rf", "costCarry"), ### FIX EARLY
         "Forward Rate Agreement" = c("r1", "r2", "t1", "t2"),
         "Exchange Rate Forward" = c("spot", "t2m", "rdomestic", "rforeign"),
         "Commodity Swap" = c("nominal", "fixedSpot", "floatSpot")

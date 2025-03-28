@@ -11,8 +11,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // binomialTree
-DataFrame binomialTree(double S, double K, double T, double r, double u, double d, double p, int steps, std::string option_type, std::string position_str, double nominal);
-RcppExport SEXP _StructuredEdge_binomialTree(SEXP SSEXP, SEXP KSEXP, SEXP TSEXP, SEXP rSEXP, SEXP uSEXP, SEXP dSEXP, SEXP pSEXP, SEXP stepsSEXP, SEXP option_typeSEXP, SEXP position_strSEXP, SEXP nominalSEXP) {
+DataFrame binomialTree(double S, double K, double T, double r, double u, double d, double p, int steps, std::string option_type, std::string position_str, double nominal, double option_cost);
+RcppExport SEXP _StructuredEdge_binomialTree(SEXP SSEXP, SEXP KSEXP, SEXP TSEXP, SEXP rSEXP, SEXP uSEXP, SEXP dSEXP, SEXP pSEXP, SEXP stepsSEXP, SEXP option_typeSEXP, SEXP position_strSEXP, SEXP nominalSEXP, SEXP option_costSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -27,13 +27,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::string >::type option_type(option_typeSEXP);
     Rcpp::traits::input_parameter< std::string >::type position_str(position_strSEXP);
     Rcpp::traits::input_parameter< double >::type nominal(nominalSEXP);
-    rcpp_result_gen = Rcpp::wrap(binomialTree(S, K, T, r, u, d, p, steps, option_type, position_str, nominal));
+    Rcpp::traits::input_parameter< double >::type option_cost(option_costSEXP);
+    rcpp_result_gen = Rcpp::wrap(binomialTree(S, K, T, r, u, d, p, steps, option_type, position_str, nominal, option_cost));
     return rcpp_result_gen;
 END_RCPP
 }
 // blackScholes
-DataFrame blackScholes(double S, double K, double T, double r, double sigma, double b, std::string option_type, std::string position_str, double nominal);
-RcppExport SEXP _StructuredEdge_blackScholes(SEXP SSEXP, SEXP KSEXP, SEXP TSEXP, SEXP rSEXP, SEXP sigmaSEXP, SEXP bSEXP, SEXP option_typeSEXP, SEXP position_strSEXP, SEXP nominalSEXP) {
+DataFrame blackScholes(double S, double K, double T, double r, double sigma, double b, std::string option_type, std::string position_str, double nominal, double option_cost);
+RcppExport SEXP _StructuredEdge_blackScholes(SEXP SSEXP, SEXP KSEXP, SEXP TSEXP, SEXP rSEXP, SEXP sigmaSEXP, SEXP bSEXP, SEXP option_typeSEXP, SEXP position_strSEXP, SEXP nominalSEXP, SEXP option_costSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -46,21 +47,57 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::string >::type option_type(option_typeSEXP);
     Rcpp::traits::input_parameter< std::string >::type position_str(position_strSEXP);
     Rcpp::traits::input_parameter< double >::type nominal(nominalSEXP);
-    rcpp_result_gen = Rcpp::wrap(blackScholes(S, K, T, r, sigma, b, option_type, position_str, nominal));
+    Rcpp::traits::input_parameter< double >::type option_cost(option_costSEXP);
+    rcpp_result_gen = Rcpp::wrap(blackScholes(S, K, T, r, sigma, b, option_type, position_str, nominal, option_cost));
+    return rcpp_result_gen;
+END_RCPP
+}
+// creditDefaultSwap
+DataFrame creditDefaultSwap(double credit_spread, double default_probability_start, double recovery_rate, double period_length, double discount_rate, std::string position_str, double nominal);
+RcppExport SEXP _StructuredEdge_creditDefaultSwap(SEXP credit_spreadSEXP, SEXP default_probability_startSEXP, SEXP recovery_rateSEXP, SEXP period_lengthSEXP, SEXP discount_rateSEXP, SEXP position_strSEXP, SEXP nominalSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type credit_spread(credit_spreadSEXP);
+    Rcpp::traits::input_parameter< double >::type default_probability_start(default_probability_startSEXP);
+    Rcpp::traits::input_parameter< double >::type recovery_rate(recovery_rateSEXP);
+    Rcpp::traits::input_parameter< double >::type period_length(period_lengthSEXP);
+    Rcpp::traits::input_parameter< double >::type discount_rate(discount_rateSEXP);
+    Rcpp::traits::input_parameter< std::string >::type position_str(position_strSEXP);
+    Rcpp::traits::input_parameter< double >::type nominal(nominalSEXP);
+    rcpp_result_gen = Rcpp::wrap(creditDefaultSwap(credit_spread, default_probability_start, recovery_rate, period_length, discount_rate, position_str, nominal));
     return rcpp_result_gen;
 END_RCPP
 }
 // exchangeForward
-DataFrame exchangeForward(double S, double T, double r_d, double r_f);
-RcppExport SEXP _StructuredEdge_exchangeForward(SEXP SSEXP, SEXP TSEXP, SEXP r_dSEXP, SEXP r_fSEXP) {
+DataFrame exchangeForward(double S, double T, double rd, double rf, std::string position_str, double nominal);
+RcppExport SEXP _StructuredEdge_exchangeForward(SEXP SSEXP, SEXP TSEXP, SEXP rdSEXP, SEXP rfSEXP, SEXP position_strSEXP, SEXP nominalSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type S(SSEXP);
     Rcpp::traits::input_parameter< double >::type T(TSEXP);
-    Rcpp::traits::input_parameter< double >::type r_d(r_dSEXP);
-    Rcpp::traits::input_parameter< double >::type r_f(r_fSEXP);
-    rcpp_result_gen = Rcpp::wrap(exchangeForward(S, T, r_d, r_f));
+    Rcpp::traits::input_parameter< double >::type rd(rdSEXP);
+    Rcpp::traits::input_parameter< double >::type rf(rfSEXP);
+    Rcpp::traits::input_parameter< std::string >::type position_str(position_strSEXP);
+    Rcpp::traits::input_parameter< double >::type nominal(nominalSEXP);
+    rcpp_result_gen = Rcpp::wrap(exchangeForward(S, T, rd, rf, position_str, nominal));
+    return rcpp_result_gen;
+END_RCPP
+}
+// exchangeRateSwap
+DataFrame exchangeRateSwap(double fixed_rate, double period_length, double exchange_rate, double discount_rate, std::string position_str, double nominal);
+RcppExport SEXP _StructuredEdge_exchangeRateSwap(SEXP fixed_rateSEXP, SEXP period_lengthSEXP, SEXP exchange_rateSEXP, SEXP discount_rateSEXP, SEXP position_strSEXP, SEXP nominalSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type fixed_rate(fixed_rateSEXP);
+    Rcpp::traits::input_parameter< double >::type period_length(period_lengthSEXP);
+    Rcpp::traits::input_parameter< double >::type exchange_rate(exchange_rateSEXP);
+    Rcpp::traits::input_parameter< double >::type discount_rate(discount_rateSEXP);
+    Rcpp::traits::input_parameter< std::string >::type position_str(position_strSEXP);
+    Rcpp::traits::input_parameter< double >::type nominal(nominalSEXP);
+    rcpp_result_gen = Rcpp::wrap(exchangeRateSwap(fixed_rate, period_length, exchange_rate, discount_rate, position_str, nominal));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -79,9 +116,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// interestRateSwap
+DataFrame interestRateSwap(double fixed_rate, double T, double floating_rate, double discount_rate, std::string position_str, double nominal);
+RcppExport SEXP _StructuredEdge_interestRateSwap(SEXP fixed_rateSEXP, SEXP TSEXP, SEXP floating_rateSEXP, SEXP discount_rateSEXP, SEXP position_strSEXP, SEXP nominalSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type fixed_rate(fixed_rateSEXP);
+    Rcpp::traits::input_parameter< double >::type T(TSEXP);
+    Rcpp::traits::input_parameter< double >::type floating_rate(floating_rateSEXP);
+    Rcpp::traits::input_parameter< double >::type discount_rate(discount_rateSEXP);
+    Rcpp::traits::input_parameter< std::string >::type position_str(position_strSEXP);
+    Rcpp::traits::input_parameter< double >::type nominal(nominalSEXP);
+    rcpp_result_gen = Rcpp::wrap(interestRateSwap(fixed_rate, T, floating_rate, discount_rate, position_str, nominal));
+    return rcpp_result_gen;
+END_RCPP
+}
 // irForward
-DataFrame irForward(double r1, double r2, double t1, double t2, double notional, std::string position_str);
-RcppExport SEXP _StructuredEdge_irForward(SEXP r1SEXP, SEXP r2SEXP, SEXP t1SEXP, SEXP t2SEXP, SEXP notionalSEXP, SEXP position_strSEXP) {
+DataFrame irForward(double r1, double r2, double t1, double t2, double nominal, std::string position_str);
+RcppExport SEXP _StructuredEdge_irForward(SEXP r1SEXP, SEXP r2SEXP, SEXP t1SEXP, SEXP t2SEXP, SEXP nominalSEXP, SEXP position_strSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -89,9 +142,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type r2(r2SEXP);
     Rcpp::traits::input_parameter< double >::type t1(t1SEXP);
     Rcpp::traits::input_parameter< double >::type t2(t2SEXP);
-    Rcpp::traits::input_parameter< double >::type notional(notionalSEXP);
+    Rcpp::traits::input_parameter< double >::type nominal(nominalSEXP);
     Rcpp::traits::input_parameter< std::string >::type position_str(position_strSEXP);
-    rcpp_result_gen = Rcpp::wrap(irForward(r1, r2, t1, t2, notional, position_str));
+    rcpp_result_gen = Rcpp::wrap(irForward(r1, r2, t1, t2, nominal, position_str));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -112,27 +165,48 @@ BEGIN_RCPP
 END_RCPP
 }
 // physicalSwap
-DataFrame physicalSwap(double quantity, double fixed_price, double spot_price);
-RcppExport SEXP _StructuredEdge_physicalSwap(SEXP quantitySEXP, SEXP fixed_priceSEXP, SEXP spot_priceSEXP) {
+DataFrame physicalSwap(double fixed_price, double period_length, double spot_price, double discount_rate, std::string position_str, double nominal);
+RcppExport SEXP _StructuredEdge_physicalSwap(SEXP fixed_priceSEXP, SEXP period_lengthSEXP, SEXP spot_priceSEXP, SEXP discount_rateSEXP, SEXP position_strSEXP, SEXP nominalSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double >::type quantity(quantitySEXP);
     Rcpp::traits::input_parameter< double >::type fixed_price(fixed_priceSEXP);
+    Rcpp::traits::input_parameter< double >::type period_length(period_lengthSEXP);
     Rcpp::traits::input_parameter< double >::type spot_price(spot_priceSEXP);
-    rcpp_result_gen = Rcpp::wrap(physicalSwap(quantity, fixed_price, spot_price));
+    Rcpp::traits::input_parameter< double >::type discount_rate(discount_rateSEXP);
+    Rcpp::traits::input_parameter< std::string >::type position_str(position_strSEXP);
+    Rcpp::traits::input_parameter< double >::type nominal(nominalSEXP);
+    rcpp_result_gen = Rcpp::wrap(physicalSwap(fixed_price, period_length, spot_price, discount_rate, position_str, nominal));
+    return rcpp_result_gen;
+END_RCPP
+}
+// varianceSwap
+DataFrame varianceSwap(double variance_strike, double realized_variance_start, std::string position_str, double nominal);
+RcppExport SEXP _StructuredEdge_varianceSwap(SEXP variance_strikeSEXP, SEXP realized_variance_startSEXP, SEXP position_strSEXP, SEXP nominalSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type variance_strike(variance_strikeSEXP);
+    Rcpp::traits::input_parameter< double >::type realized_variance_start(realized_variance_startSEXP);
+    Rcpp::traits::input_parameter< std::string >::type position_str(position_strSEXP);
+    Rcpp::traits::input_parameter< double >::type nominal(nominalSEXP);
+    rcpp_result_gen = Rcpp::wrap(varianceSwap(variance_strike, realized_variance_start, position_str, nominal));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_StructuredEdge_binomialTree", (DL_FUNC) &_StructuredEdge_binomialTree, 11},
-    {"_StructuredEdge_blackScholes", (DL_FUNC) &_StructuredEdge_blackScholes, 9},
-    {"_StructuredEdge_exchangeForward", (DL_FUNC) &_StructuredEdge_exchangeForward, 4},
+    {"_StructuredEdge_binomialTree", (DL_FUNC) &_StructuredEdge_binomialTree, 12},
+    {"_StructuredEdge_blackScholes", (DL_FUNC) &_StructuredEdge_blackScholes, 10},
+    {"_StructuredEdge_creditDefaultSwap", (DL_FUNC) &_StructuredEdge_creditDefaultSwap, 7},
+    {"_StructuredEdge_exchangeForward", (DL_FUNC) &_StructuredEdge_exchangeForward, 6},
+    {"_StructuredEdge_exchangeRateSwap", (DL_FUNC) &_StructuredEdge_exchangeRateSwap, 6},
     {"_StructuredEdge_finForwardContract", (DL_FUNC) &_StructuredEdge_finForwardContract, 5},
+    {"_StructuredEdge_interestRateSwap", (DL_FUNC) &_StructuredEdge_interestRateSwap, 6},
     {"_StructuredEdge_irForward", (DL_FUNC) &_StructuredEdge_irForward, 6},
     {"_StructuredEdge_physForwardContract", (DL_FUNC) &_StructuredEdge_physForwardContract, 6},
-    {"_StructuredEdge_physicalSwap", (DL_FUNC) &_StructuredEdge_physicalSwap, 3},
+    {"_StructuredEdge_physicalSwap", (DL_FUNC) &_StructuredEdge_physicalSwap, 6},
+    {"_StructuredEdge_varianceSwap", (DL_FUNC) &_StructuredEdge_varianceSwap, 4},
     {NULL, NULL, 0}
 };
 
