@@ -129,7 +129,7 @@ mod_creationZone_server <- function(id, r){
       `Binomial Tree` = c(1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
       `Financial Forward` = c(0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
       `Commodity Forward` = c(0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-      `Forward Rate Agreement` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+      `Forward Rate Agreement` = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
       `Exchange Rate Forward` = c(0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
       `Commodity Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0),
       `Interest Rate Swap` = c(0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0),
@@ -330,11 +330,11 @@ mod_creationZone_server <- function(id, r){
       
           ### list of parameters per model
       param_map <- list(
-        "Black-Scholes" = c("spot", "strike", "t2m", "rf", "sigma", "costCarry","derivType", "position", "nominal", "premium"), ## WORKING :)
-        "Binomial Tree" = c("spot", "strike", "t2m", "rf", "upFactor", "downFactor", "prob", "steps"),
-        "Financial Forward" = c("spot", "t2m", "rf"),
-        "Commodity Forward" = c("spot", "t2m", "rf", "costCarry"), ### FIX EARLY
-        "Forward Rate Agreement" = c("r1", "r2", "t1", "t2"),
+        "Black-Scholes" = c("spot", "strike", "t2m", "rf", "sigma", "costCarry","derivType", "position", "nominal", "premium"), ## WORKING :) -> Check Number of Rows
+        "Binomial Tree" = c("spot", "strike", "t2m", "rf", "upFactor", "downFactor", "prob", "steps", "derivType", "position", "nominal", "premium"), ## WORKING :)
+        "Financial Forward" = c("spot", "t2m", "rf", "position", "nominal"), ## WORKING :)
+        "Commodity Forward" = c("spot", "t2m", "rf", "costCarry", "position", "nominal"), ## WORKING :)
+        "Forward Rate Agreement" = c("r1", "r2", "t1", "t2", "nominal", "position"), ## WORKING :)
         "Exchange Rate Forward" = c("spot", "t2m", "rdomestic", "rforeign"),
         "Commodity Swap" = c("nominal", "fixedSpot", "floatSpot")
       )
@@ -447,7 +447,8 @@ mod_creationZone_server <- function(id, r){
     })
     
     shiny::observeEvent(input$RateT1_value, {
-      params$r1 <- input$Ratet1_value
+      params$r1 <- input$RateT1_value
+      print(params$r1)
     })
     
     shiny::observeEvent(input$RateT2_value, {
