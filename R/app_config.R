@@ -32,6 +32,7 @@ library(golem)
 library(dplyr)
 library(Rcpp)
 library(DT)
+library(ggplot2)
 
 Rcpp::sourceCpp("src/blackScholes.cpp")
 Rcpp::sourceCpp("src/binomialTree.cpp")

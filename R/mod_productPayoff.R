@@ -9,11 +9,12 @@
 #' @importFrom shiny NS tagList 
 mod_productPayoff_ui <- function(id) {
   ns <- NS(id)
-  
+  tagList(
   bslib::card(
     bslib::card_header("Product Payoff"),
     shiny::plotOutput(ns("prodPayoff"))
   )
+)
 }
     
 #' productPayoff Server Functions

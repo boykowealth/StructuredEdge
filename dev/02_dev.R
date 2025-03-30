@@ -17,6 +17,13 @@
 ## Amend DESCRIPTION with dependencies read from package code parsing
 ## install.packages('attachment') # if needed.
 attachment::att_amend_desc()
+usethis::use_package("magrittr")
+usethis::use_package("shiny")
+usethis::use_package("golem")
+usethis::use_package("dplyr")
+usethis::use_package("Rcpp")
+usethis::use_package("DT")
+usethis::use_package("ggplot2")
 
 ## Add modules ----
 ## Create a module infrastructure in R/

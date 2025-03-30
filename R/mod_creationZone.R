@@ -10,7 +10,7 @@
 #' @importFrom shiny NS tagList 
 mod_creationZone_ui <-  function(id){
   ns <- NS(id)
-  
+  tagList(
   bslib::layout_columns(
     style = "padding-top: 5px;",
     col_widths = c(6, 6),
@@ -104,6 +104,7 @@ mod_creationZone_ui <-  function(id){
     )
     ## PORTFOLIO MANAGEMNT - RIGHT <END>
     
+  )
   )
 }
     
