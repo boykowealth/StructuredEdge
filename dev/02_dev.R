@@ -17,6 +17,7 @@
 ## Amend DESCRIPTION with dependencies read from package code parsing
 ## install.packages('attachment') # if needed.
 attachment::att_amend_desc()
+usethis::use_pipe()
 usethis::use_package("magrittr")
 usethis::use_package("shiny")
 usethis::use_package("golem")
