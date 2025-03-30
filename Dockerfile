@@ -11,6 +11,7 @@ RUN Rscript -e 'remotes::install_version("testthat",upgrade="never", version = "
 RUN Rscript -e 'remotes::install_version("DT",upgrade="never", version = "0.33")'
 RUN Rscript -e 'remotes::install_version("dplyr",upgrade="never", version = "1.1.4")'
 RUN Rscript -e 'remotes::install_version("golem",upgrade="never", version = "0.5.1")'
+RUN R -e "devtools::install_github('boykowealth/StructuredEdge', dependencies = TRUE)"
 RUN mkdir /build_zone
 ADD . /build_zone
 WORKDIR /build_zone
