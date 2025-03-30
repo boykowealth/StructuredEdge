@@ -17,5 +17,5 @@ ADD . /build_zone
 WORKDIR /build_zone
 RUN R -e 'remotes::install_local(upgrade="never")'
 RUN rm -rf /build_zone
-EXPOSE 80
-CMD ["R", "-e", "options('shiny.port'=80,'shiny.host'='0.0.0.0');library(StructuredEdge);StructuredEdge::run_app()"]
+EXPOSE 3838
+CMD ["R", "-e", "options('shiny.port'=3838,'shiny.host'='0.0.0.0');library(StructuredEdge);StructuredEdge::run_app()"]
