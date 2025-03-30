@@ -12,7 +12,8 @@ mod_productPayoff_ui <- function(id) {
   
   bslib::card(
     bslib::card_header("Product Payoff"),
-    shiny::plotOutput(ns("prodPayoff"))
+    shiny::plotOutput(ns("prodPayoff")),
+    shiny::p("Test1")
   )
 }
     
