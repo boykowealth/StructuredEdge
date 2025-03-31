@@ -39,7 +39,8 @@ mod_productSim_ui <- function(id) {
       ## POSITIONS - MAIN <START>
       bslib::card(
         bslib::card_header("Simulation Environment"),
-        plotly::plotlyOutput(ns("simChart"))
+        plotly::plotlyOutput(ns("simChart")),
+        plotly::plotlyOutput(ns("simPayoffChart"))
       ),
     )
   )
@@ -157,6 +158,7 @@ mod_productSim_server <- function(id, r){
 
       type <- params$model
       
+      
       if (type == "Diffusion"){
         r$simData <- simulate_gbm_single(params$time*252, params$spot, params$mu, params$sigma, params$steps)
       }
@@ -193,6 +195,92 @@ mod_productSim_server <- function(id, r){
         
         plotly::ggplotly(p)
       }) ## CREATE PAYOFF CHART
+      
+      ## ESTIMATE PAYOFF SPLINE INTERPOLATION
+      r$simPayoff <- r$simData %>% 
+        dplyr::mutate(Sim = round((Price / dplyr::first(Price)) - 1, 4)) %>% 
+        tidyr::fill(Sim, .direction = "up")
+      
+      dfProduct <- as.data.frame(r$productTable)
+      
+      if (!is.null(dfProduct$Spot)){
+        ##splineFit <- stats::smooth.spline(r$productTable$Spot, r$productTable$Product, df=5) ## ERRORS IN FITTING
+        ##simSpline <- stats::predict(polyFit, r$simPayoff$Sim)$y
+        polyFit <- stats::lm(Product ~ stats::poly(Spot, 5), data = dfProduct)
+        print(polyFit)
+        simSpline <- predict(polyFit, newdata = data.frame(Spot = r$simPayoff$Sim))
+        
+        
+        
+        r$simPayoff <- r$simPayoff %>%
+          dplyr::mutate(simSpline = simSpline,
+                        Product = round((simSpline / dplyr::first(simSpline)) - 1, 4) * -1 
+                        ) %>% 
+          dplyr::select(Time, Sim, Product) %>% 
+          tidyr::pivot_longer(., cols = c(Sim, Product), names_to = "Type", values_to = "Value")
+        
+        output$simPayoffChart <- plotly::renderPlotly({
+          df <- r$simPayoff
+          
+          p1 <- ggplot2::ggplot(df, ggplot2::aes(x = Time, y = Value, color = Type)) +
+            ggplot2::geom_line(size = 0.5) +
+            ggplot2::labs(
+              title = "",
+              x = "Time Step",
+              y = "Percent Change"
+            ) +
+            ggplot2::theme(
+              panel.background = ggplot2::element_rect(fill = "#ededeb", color = NA),
+              plot.background = ggplot2::element_rect(fill = "#ededeb", color = NA),
+              panel.grid.major = ggplot2::element_line(color = "#32434f", size = 0.1, linetype = 2),
+              axis.text = ggplot2::element_text(color = "#193244"),
+              axis.title = ggplot2::element_text(color = "#193244", size = 10),
+              panel.border = ggplot2::element_rect(color = "#193244", fill = NA, size = 0.3),
+              axis.line = ggplot2::element_line(color = "#193244"),
+              legend.position = "bottom",
+              legend.text = ggplot2::element_text(size = 9, color = "#193244"),
+              legend.title = ggplot2::element_text(size = 11, face = "bold", color = "#193244"),
+              legend.background = ggplot2::element_rect(fill = "#ededeb", color = "#193244")
+            ) + 
+            ggplot2::scale_y_continuous(labels = scales::percent_format()) +
+            ggplot2::scale_color_manual(values = c("Product" = "#193244", "Sim" = "#aeb8bf"))
+          
+          
+          p2 <- ggplot2::ggplot(df, aes(x = Value, fill = Type)) +
+            geom_histogram(bins = 30, alpha = 0.7, color = "#193244", position = "identity") +
+            labs(
+              title = "",
+              x = "Percent Change",
+              y = "Frequency"
+            ) +
+            theme(
+              panel.background = element_rect(fill = "#ededeb", color = NA),
+              plot.background = element_rect(fill = "#ededeb", color = NA),
+              panel.grid.major = element_line(color = "#32434f", size = 0.1, linetype = 2),
+              axis.text = element_text(color = "#193244"),
+              axis.title = element_text(color = "#193244", size = 10),
+              panel.border = element_rect(color = "#193244", fill = NA, size = 0.3),
+              axis.line = element_line(color = "#193244"),
+              legend.position = "bottom",
+              legend.text = ggplot2::element_text(size = 9, color = "#193244"),
+              legend.title = ggplot2::element_text(size = 11, face = "bold", color = "#193244"),
+              legend.background = ggplot2::element_rect(fill = "#ededeb", color = "#193244")
+            ) +
+            ggplot2::scale_x_continuous(labels = scales::percent_format()) +
+            ggplot2::scale_fill_manual(values = c("Product" = "#193244", "Sim" = "#aeb8bf"))
+          
+          
+          p1 <- plotly::ggplotly(p1)
+          p2 <- plotly::ggplotly(p2)
+          
+          plotly::subplot(p1, p2, nrows = 1)
+          
+        }) ## CREATE PAYOFF CHART
+        
+      } else{
+        print("Missing Product Data")
+      }
+      
       
     })
     

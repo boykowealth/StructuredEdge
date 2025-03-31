@@ -34,6 +34,7 @@ library(Rcpp)
 library(DT)
 library(ggplot2)
 library(plotly)
+library(splines)
 
 Rcpp::sourceCpp("src/blackScholes.cpp")
 Rcpp::sourceCpp("src/binomialTree.cpp")

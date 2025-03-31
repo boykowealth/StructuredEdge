@@ -178,9 +178,9 @@ mod_creationZone_server <- function(id, r){
     params <- shiny::reactiveValues(
       pos = 0,
       premium = 0,
-      deriv = 0,
-      derivType = 0,
-      model = 0,
+      deriv = "Option",
+      derivType = "Call",
+      model = "Black-Scholes",
       position = 0,
       nominal = 0,
       spot = 0,

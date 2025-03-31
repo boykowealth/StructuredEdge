@@ -55,8 +55,7 @@ mod_productPayoff_server <- function(id, r){
     ns <- session$ns
     
     output$prodPayoff <- plotly::renderPlotly({
-      df <- r$productTable %>% 
-        tidyr::drop_na()
+      df <- r$productTable
       
       p <- ggplot2::ggplot(df, ggplot2::aes(x = Spot, y = Product)) +
         ggplot2::geom_line(color = "#193244", size = 1.05) +

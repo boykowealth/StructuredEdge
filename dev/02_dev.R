@@ -27,6 +27,7 @@ usethis::use_package("DT")
 usethis::use_package("ggplot2")
 usethis::use_package("plotly")
 usethis::use_package("rlang")
+usethis::use_package("splines")
 
 ## Add modules ----
 ## Create a module infrastructure in R/

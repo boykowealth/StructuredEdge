@@ -38,7 +38,7 @@ DataFrame simulate_ou_single(int num_steps, double X0, double mu, double theta, 
   }
   
   // Create the DataFrame
-  DataFrame df = DataFrame::create(Named("Time") = time, Named("Value") = results);
+  DataFrame df = DataFrame::create(Named("Time") = time, Named("Price") = results);
   
   return df;
 }
