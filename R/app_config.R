@@ -33,6 +33,7 @@ library(dplyr)
 library(Rcpp)
 library(DT)
 library(ggplot2)
+library(plotly)
 
 Rcpp::sourceCpp("src/blackScholes.cpp")
 Rcpp::sourceCpp("src/binomialTree.cpp")
@@ -40,7 +41,11 @@ Rcpp::sourceCpp("src/financialForward.cpp")
 Rcpp::sourceCpp("src/physicalForward.cpp")
 Rcpp::sourceCpp("src/irForward.cpp")
 Rcpp::sourceCpp("src/excForward.cpp")
+Rcpp::sourceCpp("src/financialSwap.cpp")
 Rcpp::sourceCpp("src/physicalSwap.cpp")
+Rcpp::sourceCpp("src/excSwap.cpp")
+Rcpp::sourceCpp("src/varSwap.cpp")
+Rcpp::sourceCpp("src/cds.cpp")
 
 get_golem_config <- function(
   value,

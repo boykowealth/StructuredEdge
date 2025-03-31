@@ -22,21 +22,27 @@ DataFrame exchangeForward(double S, double T, double rd, double rf, std::string 
     Rcpp::stop("Invalid position. Use 'Long' for long position or 'Short' for short position.");
   }
   
+  // Calculate the forward price based on the initial spot price, interest rates, and time
+  double forward = exchange_rate_forward_price(S, T, rd, rf);
+  
   // Define the fixed range for spot prices (-100% to +100%)
   double S_min = -1.0;  // -100% normalized
   double S_max = 1.0;   // +100% normalized
   double S_step = 0.0001; // Step size of 1 basis point (bps)
   
-  std::vector<double> normalized_spots, forward_values;
+  std::vector<double> normalized_spots, payoffs;
   
   for (double normalized_spot = S_min; normalized_spot <= S_max; normalized_spot += S_step) {
     double S_curr = S * (1.0 + normalized_spot); // Convert normalized spot back to price
     normalized_spots.push_back(normalized_spot);
-    forward_values.push_back(position * nominal * exchange_rate_forward_price(S_curr, T, rd, rf)); // Adjusted by position and nominal
+    
+    // Calculate payoff as (spot price - forward price) * position * nominal
+    double payoff = position * nominal * (S_curr - forward);
+    payoffs.push_back(payoff);
   }
   
   return DataFrame::create(
     _["Spot"] = normalized_spots,
-    _["Payoff"] = forward_values
+    _["Payoff"] = payoffs
   );
 }
