@@ -180,6 +180,56 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// simulate_gbm_single
+DataFrame simulate_gbm_single(double num_steps, double S0, double mu, double sigma, double T);
+RcppExport SEXP _StructuredEdge_simulate_gbm_single(SEXP num_stepsSEXP, SEXP S0SEXP, SEXP muSEXP, SEXP sigmaSEXP, SEXP TSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type num_steps(num_stepsSEXP);
+    Rcpp::traits::input_parameter< double >::type S0(S0SEXP);
+    Rcpp::traits::input_parameter< double >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type T(TSEXP);
+    rcpp_result_gen = Rcpp::wrap(simulate_gbm_single(num_steps, S0, mu, sigma, T));
+    return rcpp_result_gen;
+END_RCPP
+}
+// simulate_ou_single
+DataFrame simulate_ou_single(int num_steps, double X0, double mu, double theta, double sigma, double T);
+RcppExport SEXP _StructuredEdge_simulate_ou_single(SEXP num_stepsSEXP, SEXP X0SEXP, SEXP muSEXP, SEXP thetaSEXP, SEXP sigmaSEXP, SEXP TSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type num_steps(num_stepsSEXP);
+    Rcpp::traits::input_parameter< double >::type X0(X0SEXP);
+    Rcpp::traits::input_parameter< double >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type T(TSEXP);
+    rcpp_result_gen = Rcpp::wrap(simulate_ou_single(num_steps, X0, mu, theta, sigma, T));
+    return rcpp_result_gen;
+END_RCPP
+}
+// simulate_ouj_single
+DataFrame simulate_ouj_single(int num_steps, double S0, double mu, double theta, double sigma, double Jump_prob, double Jump_mean, double sigma_JumpStdv, double T);
+RcppExport SEXP _StructuredEdge_simulate_ouj_single(SEXP num_stepsSEXP, SEXP S0SEXP, SEXP muSEXP, SEXP thetaSEXP, SEXP sigmaSEXP, SEXP Jump_probSEXP, SEXP Jump_meanSEXP, SEXP sigma_JumpStdvSEXP, SEXP TSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type num_steps(num_stepsSEXP);
+    Rcpp::traits::input_parameter< double >::type S0(S0SEXP);
+    Rcpp::traits::input_parameter< double >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type Jump_prob(Jump_probSEXP);
+    Rcpp::traits::input_parameter< double >::type Jump_mean(Jump_meanSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma_JumpStdv(sigma_JumpStdvSEXP);
+    Rcpp::traits::input_parameter< double >::type T(TSEXP);
+    rcpp_result_gen = Rcpp::wrap(simulate_ouj_single(num_steps, S0, mu, theta, sigma, Jump_prob, Jump_mean, sigma_JumpStdv, T));
+    return rcpp_result_gen;
+END_RCPP
+}
 // varianceSwap
 DataFrame varianceSwap(double variance_strike, double realized_variance_start, std::string position_str, double nominal);
 RcppExport SEXP _StructuredEdge_varianceSwap(SEXP variance_strikeSEXP, SEXP realized_variance_startSEXP, SEXP position_strSEXP, SEXP nominalSEXP) {
@@ -206,6 +256,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_StructuredEdge_irForward", (DL_FUNC) &_StructuredEdge_irForward, 6},
     {"_StructuredEdge_physForwardContract", (DL_FUNC) &_StructuredEdge_physForwardContract, 6},
     {"_StructuredEdge_physicalSwap", (DL_FUNC) &_StructuredEdge_physicalSwap, 6},
+    {"_StructuredEdge_simulate_gbm_single", (DL_FUNC) &_StructuredEdge_simulate_gbm_single, 5},
+    {"_StructuredEdge_simulate_ou_single", (DL_FUNC) &_StructuredEdge_simulate_ou_single, 6},
+    {"_StructuredEdge_simulate_ouj_single", (DL_FUNC) &_StructuredEdge_simulate_ouj_single, 9},
     {"_StructuredEdge_varianceSwap", (DL_FUNC) &_StructuredEdge_varianceSwap, 4},
     {NULL, NULL, 0}
 };

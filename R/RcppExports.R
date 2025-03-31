@@ -41,6 +41,18 @@ physicalSwap <- function(fixed_price, period_length, spot_price, discount_rate, 
     .Call(`_StructuredEdge_physicalSwap`, fixed_price, period_length, spot_price, discount_rate, position_str, nominal)
 }
 
+simulate_gbm_single <- function(num_steps, S0, mu, sigma, T) {
+    .Call(`_StructuredEdge_simulate_gbm_single`, num_steps, S0, mu, sigma, T)
+}
+
+simulate_ou_single <- function(num_steps, X0, mu, theta, sigma, T) {
+    .Call(`_StructuredEdge_simulate_ou_single`, num_steps, X0, mu, theta, sigma, T)
+}
+
+simulate_ouj_single <- function(num_steps, S0, mu, theta, sigma, Jump_prob, Jump_mean, sigma_JumpStdv, T) {
+    .Call(`_StructuredEdge_simulate_ouj_single`, num_steps, S0, mu, theta, sigma, Jump_prob, Jump_mean, sigma_JumpStdv, T)
+}
+
 varianceSwap <- function(variance_strike, realized_variance_start, position_str, nominal) {
     .Call(`_StructuredEdge_varianceSwap`, variance_strike, realized_variance_start, position_str, nominal)
 }

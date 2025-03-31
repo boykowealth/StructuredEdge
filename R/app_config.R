@@ -47,6 +47,8 @@ Rcpp::sourceCpp("src/excSwap.cpp")
 Rcpp::sourceCpp("src/varSwap.cpp")
 Rcpp::sourceCpp("src/cds.cpp")
 
+Rcpp::sourceCpp("src/simGBM.cpp")
+
 get_golem_config <- function(
   value,
   config = Sys.getenv(

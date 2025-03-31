@@ -80,7 +80,7 @@ mod_productPayoff_server <- function(id, r){
         ggplot2::scale_y_continuous(labels = scales::dollar_format())
       
       plotly::ggplotly(p)
-    }) ## CREATE PAYOFF TABLE
+    }) ## CREATE PAYOFF CHART
  
     output$masterView2 <- DT::renderDT({
       DT::datatable(r$viewTable,
