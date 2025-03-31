@@ -10,6 +10,7 @@ app_server <- function(input, output, session) {
   
   mod_creationZone_server("creationZone_ui_1", r = r)
   mod_productPayoff_server("productPayoff_ui_1", r = r)
+  mod_productSim_server("productSim_ui_1", r = r)  
   
 }
 

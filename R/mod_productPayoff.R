@@ -12,23 +12,38 @@ mod_productPayoff_ui <- function(id) {
   tagList(
     bslib::layout_columns(
       style = "padding-top: 5px;",
-      col_widths = c(6, 6),
+      col_widths = c(4, 4, 4),
       
       ## STATS - LEFT <START>
       bslib::card(
         bslib::card_header("Product Statistics")
       ),
       
-      ## POSITIONS - LEFT <START>
+      ## POSITIONS - CENTER <START>
+      bslib::card(
+        bslib::card_header("Product Breakdown")
+      ),
+      
+      ## POSITIONS - RIGHT <START>
       bslib::card(
         bslib::card_header("Product Breakdown")
       )
     ),
     
-  bslib::card(
-    bslib::card_header("Product Payoff"),
-    plotly::plotlyOutput(ns("prodPayoff"))
-  )
+    bslib::layout_columns(
+      col_widths = c(8, 4),
+      
+      bslib::card(
+        bslib::card_header("Product Payoff"),
+        plotly::plotlyOutput(ns("prodPayoff"))
+      ),
+      
+      ## POSITIONS - LEFT <START>
+      bslib::card(
+        bslib::card_header("Product Positions"),
+        DT::DTOutput(ns("masterView2"))
+      )
+    )
 )
 }
     
@@ -44,7 +59,7 @@ mod_productPayoff_server <- function(id, r){
         tidyr::drop_na()
       
       p <- ggplot2::ggplot(df, ggplot2::aes(x = Spot, y = Product)) +
-        ggplot2::geom_smooth(color = "#193244") +
+        ggplot2::geom_line(color = "#193244", size = 1.05) +
         ggplot2::labs(
           title = "",
           x = "Underlying Change (Percentage)",
@@ -64,9 +79,17 @@ mod_productPayoff_server <- function(id, r){
         ggplot2::scale_x_continuous(labels = scales::percent_format()) +
         ggplot2::scale_y_continuous(labels = scales::dollar_format())
       
-      plotly::ggplotly(p) # Convert ggplot to interactive Plotly
-    })
+      plotly::ggplotly(p)
+    }) ## CREATE PAYOFF TABLE
  
+    output$masterView2 <- DT::renderDT({
+      DT::datatable(r$viewTable,
+                    options = list(paging = FALSE,
+                                   dom = "ft"
+                    )
+      ) ## update display table
+    })
+    
   })
 }
     

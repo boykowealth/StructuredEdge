@@ -363,10 +363,13 @@ mod_creationZone_server <- function(id, r){
         dplyr::mutate(Product = rowSums(dplyr::across(-Spot))) %>% 
         dplyr::select(Spot, Product)
         
+      ##print(r$productTable)
       
-      print(r$productTable)
+      r$fairPrice <- r$productTable %>%
+        dplyr::filter(round(abs(Spot), 4) == round(min(abs(Spot)), 4)) %>% 
+        dplyr::pull(Product)
       
-      
+      print(r$fairPrice)
         
     })
     
