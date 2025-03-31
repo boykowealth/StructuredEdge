@@ -32,23 +32,21 @@ DataFrame creditDefaultSwap(double credit_spread, double default_probability_sta
     Rcpp::stop("Invalid position. Use 'Long' for long position or 'Short' for short position.");
   }
   
-  // Define a fixed range for default probabilities (0% to 200%)
-  double default_probability_min = default_probability_start * 0.0; // Start at 0% of the initial probability
-  double default_probability_max = default_probability_start * 2.0; // Range up to 200% of the initial probability
-  int num_steps = 20000; // Standardize the number of rows to 20,001
-  double default_probability_step = (default_probability_max - default_probability_min) / num_steps;
+  // Define the fixed range for default probabilities (-100% to +100%)
+  double default_probability_min = -1.0;  // -100% normalized
+  double default_probability_max = 1.0;   // +100% normalized
+  double default_probability_step = 0.0001; // Step size of 1 basis point (bps)
   
   std::vector<double> normalized_probabilities, swap_values;
   
-  for (int i = 0; i <= num_steps; ++i) {
-    double default_probability = default_probability_min + i * default_probability_step; // Increment default probability
-    double normalized_probability = (default_probability / default_probability_start) - 1.0; // Decimal deviation from the initial probability
+  for (double normalized_probability = default_probability_min; normalized_probability <= default_probability_max; normalized_probability += default_probability_step) {
+    double default_probability = default_probability_start * (1.0 + normalized_probability); // Convert normalized back to actual probability
     normalized_probabilities.push_back(normalized_probability);
     swap_values.push_back(position * cds_present_value(credit_spread, default_probability, recovery_rate, nominal, period_length, discount_rate)); // Adjusted by position
   }
   
   return DataFrame::create(
     _["Spot"] = normalized_probabilities,
-    _["Price"] = swap_values
+    _["Payoff"] = swap_values
   );
 }

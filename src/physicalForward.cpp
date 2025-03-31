@@ -22,20 +22,21 @@ DataFrame physForwardContract(double S, double T, double r, double c, std::strin
     Rcpp::stop("Invalid position. Use 'Long' for long position or 'Short' for short position.");
   }
   
-  double S_min = S * 0.0;  // Start at 0% of the original spot price
-  double S_max = S * 2.0;  // Range up to 200% of the original spot price
-  double S_step = 0.01;    // Divide range into small increments
+  // Define the fixed range for spot prices (-100% to +100%)
+  double S_min = -1.0;  // -100% normalized
+  double S_max = 1.0;   // +100% normalized
+  double S_step = 0.0001; // Step size of 1 basis point (bps)
   
   std::vector<double> normalized_spots, forward_values;
   
-  for (double S_curr = S_min; S_curr <= S_max; S_curr += S_step) {
-    double normalized_spot = (S_curr / S) - 1.0; // Calculate decimal deviation from original spot
+  for (double normalized_spot = S_min; normalized_spot <= S_max; normalized_spot += S_step) {
+    double S_curr = S * (1.0 + normalized_spot); // Convert normalized spot back to price
     normalized_spots.push_back(normalized_spot);
     forward_values.push_back(position * nominal * physical_delivery_forward_price(S_curr, T, r, c)); // Adjusted by position and nominal
   }
   
   return DataFrame::create(
     _["Spot"] = normalized_spots,
-    _["Price"] = forward_values
+    _["Payoff"] = forward_values
   );
 }

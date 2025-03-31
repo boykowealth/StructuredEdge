@@ -24,21 +24,21 @@ DataFrame varianceSwap(double variance_strike, double realized_variance_start,
     Rcpp::stop("Invalid position. Use 'Long' for long position or 'Short' for short position.");
   }
   
-  // Range of realized variance
-  double realized_variance_min = realized_variance_start * 0;
-  double realized_variance_max = realized_variance_start * 2;
-  double realized_variance_step = 0.000045;
+  // Define the fixed range for realized variance (-100% to +100%)
+  double realized_variance_min = -1.0;  // -100% normalized
+  double realized_variance_max = 1.0;   // +100% normalized
+  double realized_variance_step = 0.0001; // Step size of 1 basis point (bps)
   
   std::vector<double> normalized_variances, swap_values;
   
-  for (double realized_variance = realized_variance_min; realized_variance <= realized_variance_max; realized_variance += realized_variance_step) {
-    double normalized_variance = (realized_variance / realized_variance_start) - 1.0; // Decimal deviation from initial realized variance
+  for (double normalized_variance = realized_variance_min; normalized_variance <= realized_variance_max; normalized_variance += realized_variance_step) {
+    double realized_variance = realized_variance_start * (1.0 + normalized_variance); // Convert normalized variance back to actual realized variance
     normalized_variances.push_back(normalized_variance);
     swap_values.push_back(position * variance_swap_present_value(variance_strike, realized_variance, nominal)); // Adjusted by position
   }
   
   return DataFrame::create(
     _["Spot"] = normalized_variances,
-    _["Price"] = swap_values
+    _["Payoff"] = swap_values
   );
 }

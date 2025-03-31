@@ -24,21 +24,21 @@ DataFrame irForward(double r1, double r2, double t1, double t2, double nominal, 
     Rcpp::stop("Invalid position. Use 'Long' for long position or 'Short' for short position.");
   }
   
-  // Range of rates (relative deviations)
-  double r_min = r1 * 0;  // Start at 50% of initial rate
-  double r_max = r1 * 2.0001;  // Range up to 200% of initial rate
-  double r_step = 0.000005;
+  // Define the fixed range for rates (-100% to +100%)
+  double r_min = -1.0;  // -100% normalized
+  double r_max = 1.0;   // +100% normalized
+  double r_step = 0.0001; // Step size of 1 basis point (bps)
   
   std::vector<double> normalized_rates, fra_values;
   
-  for (double r_curr = r_min; r_curr <= r_max; r_curr += r_step) {
-    double normalized_rate = (r_curr / r1) - 1.0; // Calculate decimal deviation from initial rate
+  for (double normalized_rate = r_min; normalized_rate <= r_max; normalized_rate += r_step) {
+    double r_curr = r1 * (1.0 + normalized_rate); // Convert normalized rate back to actual rate
     normalized_rates.push_back(normalized_rate);
-    fra_values.push_back(position * fra_price(r1, r_curr, t1, t2, nominal));
+    fra_values.push_back(position * fra_price(r1, r_curr, t1, t2, nominal)); // Adjusted by position
   }
   
   return DataFrame::create(
     _["Spot"] = normalized_rates,
-    _["Price"] = fra_values
+    _["Payoff"] = fra_values
   );
 }
