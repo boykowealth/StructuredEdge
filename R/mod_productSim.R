@@ -158,15 +158,15 @@ mod_productSim_server <- function(id, r){
       type <- params$model
       
       if (type == "Diffusion"){
-        r$simData <- simulate_gbm_single(params$steps, params$spot, params$mu, params$sigma, params$time)
+        r$simData <- simulate_gbm_single(params$time*252, params$spot, params$mu, params$sigma, params$steps)
       }
       
       if (type == "Mean Reversion"){
-        r$simData <- simulate_ou_single(params$steps, params$spot, params$mu, params$theta, params$sigma, params$time)
+        r$simData <- simulate_ou_single(params$time*252, params$spot, params$mu, params$theta, params$sigma, params$steps)
       }
       
       if (type == "Levy Mean Reversion"){
-        r$simData <- simulate_ouj_single(params$steps, params$spot, params$mu, params$theta, params$sigma, params$jProb, params$jMean, params$jSigma, params$time)
+        r$simData <- simulate_ouj_single(params$time*252, params$spot, params$mu, params$theta, params$sigma, params$jProb, params$jMean, params$jSigma, params$steps)
       }
       
       #print(r$simData)
