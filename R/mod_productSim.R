@@ -214,7 +214,7 @@ mod_productSim_server <- function(id, r){
         
         r$simPayoff <- r$simPayoff %>%
           dplyr::mutate(simSpline = simSpline,
-                        Product = round((simSpline / dplyr::first(simSpline)) - 1, 4) * -1 
+                        Product = round((simSpline / dplyr::first(simSpline)) - 1, 4)
                         ) %>% 
           dplyr::select(Time, Sim, Product) %>% 
           tidyr::pivot_longer(., cols = c(Sim, Product), names_to = "Type", values_to = "Value")
@@ -246,8 +246,21 @@ mod_productSim_server <- function(id, r){
             ggplot2::scale_color_manual(values = c("Product" = "#193244", "Sim" = "#aeb8bf"))
           
           
-          p2 <- ggplot2::ggplot(df, aes(x = Value, fill = Type)) +
-            geom_histogram(bins = 30, alpha = 0.7, color = "#193244", position = "identity") +
+          p2 <- ggplot2::ggplot(df, aes(x = Value)) +
+            geom_histogram(
+              data = df %>% filter(Type == "Product"), 
+              aes(fill = Type), 
+              bins = 30, 
+              alpha = 0.7, 
+              color = "#193244", 
+              position = "identity"
+            ) +
+            geom_density(
+              data = df %>% filter(Type == "Sim"), 
+              aes(color = Type), 
+              size = 1, 
+              adjust = 1.5 # Optional: Adjust smoothness
+            ) +
             labs(
               title = "",
               x = "Percent Change",
@@ -267,7 +280,8 @@ mod_productSim_server <- function(id, r){
               legend.background = ggplot2::element_rect(fill = "#ededeb", color = "#193244")
             ) +
             ggplot2::scale_x_continuous(labels = scales::percent_format()) +
-            ggplot2::scale_fill_manual(values = c("Product" = "#193244", "Sim" = "#aeb8bf"))
+            ggplot2::scale_fill_manual(values = c("Product" = "#193244")) +
+            ggplot2::scale_color_manual(values = c("Sim" = "#aeb8bf"))
           
           
           p1 <- plotly::ggplotly(p1)
