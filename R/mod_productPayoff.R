@@ -10,6 +10,21 @@
 mod_productPayoff_ui <- function(id) {
   ns <- NS(id)
   tagList(
+    bslib::layout_columns(
+      style = "padding-top: 5px;",
+      col_widths = c(6, 6),
+      
+      ## STATS - LEFT <START>
+      bslib::card(
+        bslib::card_header("Product Statistics")
+      ),
+      
+      ## POSITIONS - LEFT <START>
+      bslib::card(
+        bslib::card_header("Product Breakdown")
+      )
+    ),
+    
   bslib::card(
     bslib::card_header("Product Payoff"),
     plotly::plotlyOutput(ns("prodPayoff"))

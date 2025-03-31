@@ -5,9 +5,9 @@
 
 using namespace Rcpp;
 
-// Function for calculating forward prices
+// Function for calculating forward price at initial spot
 double forward_price(double S, double T, double r) {
-  return S * exp(r * T);
+  return S * exp(r * T); // Forward price at initial spot (S)
 }
 
 // [[Rcpp::export]]
@@ -22,8 +22,8 @@ DataFrame finForwardContract(double S, double T, double r, std::string position_
     Rcpp::stop("Invalid position. Use 'Long' for long position or 'Short' for short position.");
   }
   
-  // Calculate the forward price based on initial spot price
-  double forward = forward_price(S, T, r);
+  // Compute the initial forward price at S (0% spot change)
+  double forward_initial = forward_price(S, T, r);
   
   // Define the fixed range for spot prices (-100% to +100%)
   double S_min = -1.0;  // -100% normalized
@@ -33,11 +33,12 @@ DataFrame finForwardContract(double S, double T, double r, std::string position_
   std::vector<double> normalized_spots, payoffs;
   
   for (double normalized_spot = S_min; normalized_spot <= S_max; normalized_spot += S_step) {
-    double S_curr = S * (1.0 + normalized_spot); // Convert normalized spot back to price
+    // Calculate the current spot price based on normalization
+    double S_curr = S * (1.0 + normalized_spot);
     normalized_spots.push_back(normalized_spot);
     
-    // Calculate payoff as (spot price - forward price) * position * nominal
-    double payoff = position * nominal * (S_curr - forward);
+    // Payoff = (Spot Price - Initial Forward Price) * Position * Nominal
+    double payoff = position * nominal * (S_curr - forward_initial);
     payoffs.push_back(payoff);
   }
   

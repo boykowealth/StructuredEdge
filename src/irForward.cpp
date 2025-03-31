@@ -5,7 +5,7 @@
 
 using namespace Rcpp;
 
-// Function for calculating FRA prices
+// Function for calculating FRA forward rate
 double fra_forward_rate(double r1, double r2, double t1, double t2) {
   return (r2 * t2 - r1 * t1) / (t2 - t1); // Implied forward rate
 }
@@ -23,7 +23,7 @@ DataFrame irForward(double r1, double r2, double t1, double t2, double nominal, 
   }
   
   // Calculate the forward rate based on the initial rates and times
-  double forward_rate = fra_forward_rate(r1, r2, t1, t2);
+  double forward_rate_initial = fra_forward_rate(r1, r2, t1, t2);
   
   // Define the fixed range for future rates (-100% to +100%)
   double r_min = -1.0;  // -100% normalized
@@ -38,7 +38,7 @@ DataFrame irForward(double r1, double r2, double t1, double t2, double nominal, 
     
     // Payoff = Present Value of (Actual Future Rate - Forward Rate)
     double actual_forward_rate = fra_forward_rate(r1, r_curr, t1, t2);
-    double payoff = position * nominal * (actual_forward_rate - forward_rate) * exp(-r_curr * t2);
+    double payoff = position * nominal * (actual_forward_rate - forward_rate_initial) * exp(-r_curr * t2);
     payoffs.push_back(payoff);
   }
   

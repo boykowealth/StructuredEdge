@@ -5,9 +5,9 @@
 
 using namespace Rcpp;
 
-// Function for calculating exchange rate forward prices with foreign and domestic interest rates
+// Function for calculating exchange rate forward price with domestic and foreign interest rates
 double exchange_rate_forward_price(double S, double T, double rd, double rf) {
-  return S * exp((rd - rf) * T); // Incorporates domestic and foreign interest rates
+  return S * exp((rd - rf) * T); // Forward price based on interest rate differential
 }
 
 // [[Rcpp::export]]
@@ -22,10 +22,10 @@ DataFrame exchangeForward(double S, double T, double rd, double rf, std::string 
     Rcpp::stop("Invalid position. Use 'Long' for long position or 'Short' for short position.");
   }
   
-  // Calculate the forward price based on the initial spot price, interest rates, and time
-  double forward = exchange_rate_forward_price(S, T, rd, rf);
+  // Compute the initial forward price at S (0% spot change)
+  double forward_initial = exchange_rate_forward_price(S, T, rd, rf);
   
-  // Define the fixed range for spot prices (-100% to +100%)
+  // Define the fixed range for spot price changes (-100% to +100%)
   double S_min = -1.0;  // -100% normalized
   double S_max = 1.0;   // +100% normalized
   double S_step = 0.0001; // Step size of 1 basis point (bps)
@@ -33,11 +33,12 @@ DataFrame exchangeForward(double S, double T, double rd, double rf, std::string 
   std::vector<double> normalized_spots, payoffs;
   
   for (double normalized_spot = S_min; normalized_spot <= S_max; normalized_spot += S_step) {
-    double S_curr = S * (1.0 + normalized_spot); // Convert normalized spot back to price
+    // Compute the current spot price based on the percentage change
+    double S_curr = S * (1.0 + normalized_spot);
     normalized_spots.push_back(normalized_spot);
     
-    // Calculate payoff as (spot price - forward price) * position * nominal
-    double payoff = position * nominal * (S_curr - forward);
+    // Payoff = (Spot Price - Initial Forward Price) * Position * Nominal
+    double payoff = position * nominal * (S_curr - forward_initial);
     payoffs.push_back(payoff);
   }
   

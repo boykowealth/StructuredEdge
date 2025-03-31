@@ -22,8 +22,8 @@ DataFrame physForwardContract(double S, double T, double r, double c, std::strin
     Rcpp::stop("Invalid position. Use 'Long' for long position or 'Short' for short position.");
   }
   
-  // Calculate the forward price with the given parameters
-  double forward_price = physical_delivery_forward_price(S, T, r, c);
+  // Calculate the initial forward price based on given parameters
+  double forward_price_initial = physical_delivery_forward_price(S, T, r, c);
   
   // Define the fixed range for spot prices (-100% to +100%)
   double S_min = -1.0;  // -100% normalized
@@ -36,8 +36,8 @@ DataFrame physForwardContract(double S, double T, double r, double c, std::strin
     double S_curr = S * (1.0 + normalized_spot); // Convert normalized spot back to price
     normalized_spots.push_back(normalized_spot);
     
-    // Calculate payoff as (Spot Price - Forward Price) * Position * Nominal
-    double payoff = position * nominal * (S_curr - forward_price);
+    // Payoff = (Spot Price - Forward Price) * Position * Nominal
+    double payoff = position * nominal * (S_curr - forward_price_initial);
     payoffs.push_back(payoff);
   }
   
