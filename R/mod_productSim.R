@@ -70,7 +70,7 @@ mod_productSim_server <- function(id, r){
     )
     
     df.params <- dplyr::tibble(
-      Param = c("Number of Steps", "Spot", "Mu", "Sigma", "Time", 
+      Param = c("Step Size", "Spot", "Mu", "Sigma", "Time", 
                 "Theta", "Jump Probability", "Jump Mean", "Jump Sigma"
                 ),
       `Diffusion` = c(1, 1, 1, 1, 1, 0, 0, 0, 0),
@@ -93,8 +93,8 @@ mod_productSim_server <- function(id, r){
       params$model <- input$simModel_select
     })
     
-    shiny::observeEvent(input$NumberofSteps_value, {
-      params$steps <- input$NumberofSteps_value
+    shiny::observeEvent(input$StepSize_value, {
+      params$steps <- input$StepSize_value
     })
     
     shiny::observeEvent(input$Spot_value, {
@@ -205,12 +205,19 @@ mod_productSim_server <- function(id, r){
       
       if (!is.null(dfProduct$Spot)){
         ##splineFit <- stats::smooth.spline(r$productTable$Spot, r$productTable$Product, df=5) ## ERRORS IN FITTING
+        ##polyFit <- stats::lm(Product ~ stats::poly(Spot, 4), data = dfProduct) ## ERRORS IN FITTING
+        
         ##simSpline <- stats::predict(polyFit, r$simPayoff$Sim)$y
-        polyFit <- stats::lm(Product ~ stats::poly(Spot, 5), data = dfProduct)
-        print(polyFit)
-        simSpline <- predict(polyFit, newdata = data.frame(Spot = r$simPayoff$Sim))
+        ##simSpline <- predict(polyFit, newdata = data.frame(Spot = r$simPayoff$Sim))
+        ##simSpline <- stats::predict(polyFit, newdata = data.frame(Spot = r$simPayoff$Sim))
         
         
+        kmeans_result <- stats::kmeans(r$productTable$Spot, centers = 5)
+        knots <- sort(kmeans_result$centers)
+        k <- ncol(r$masterTable) - 1 ## MY THOUGHT IS THAT YOU COULD ESTIMATE THE COMPLEXITY OF THE FUNCTION BASED ON NUMBER OF DERIVS IN PRODUCT 
+        
+        splineFit <- stats::lm(Product ~ splines::bs(Spot, knots = knots), data = r$productTable) ## FIT A PIECEWISE POLYNOMIAL SPLINE BASED ON COMPLEXITY
+        simSpline <- predict(splineFit, newdata = data.frame(Spot = r$simPayoff$Sim)) 
         
         r$simPayoff <- r$simPayoff %>%
           dplyr::mutate(simSpline = simSpline,
@@ -273,11 +280,7 @@ mod_productSim_server <- function(id, r){
               axis.text = element_text(color = "#193244"),
               axis.title = element_text(color = "#193244", size = 10),
               panel.border = element_rect(color = "#193244", fill = NA, size = 0.3),
-              axis.line = element_line(color = "#193244"),
-              legend.position = "bottom",
-              legend.text = ggplot2::element_text(size = 9, color = "#193244"),
-              legend.title = ggplot2::element_text(size = 11, face = "bold", color = "#193244"),
-              legend.background = ggplot2::element_rect(fill = "#ededeb", color = "#193244")
+              axis.line = element_line(color = "#193244")
             ) +
             ggplot2::scale_x_continuous(labels = scales::percent_format()) +
             ggplot2::scale_fill_manual(values = c("Product" = "#193244")) +
