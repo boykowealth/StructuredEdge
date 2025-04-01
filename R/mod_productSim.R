@@ -211,10 +211,11 @@ mod_productSim_server <- function(id, r){
         ##simSpline <- predict(polyFit, newdata = data.frame(Spot = r$simPayoff$Sim))
         ##simSpline <- stats::predict(polyFit, newdata = data.frame(Spot = r$simPayoff$Sim))
         
-        
-        kmeans_result <- stats::kmeans(r$productTable$Spot, centers = 5)
+        k <- ncol(r$payoffTable) - 1 ## MY THOUGHT IS THAT YOU COULD ESTIMATE THE COMPLEXITY OF THE FUNCTION BASED ON NUMBER OF DERIVS IN PRODUCT 
+        print(k)
+        kmeans_result <- stats::kmeans(r$productTable$Spot, centers = k)
         knots <- sort(kmeans_result$centers)
-        k <- ncol(r$masterTable) - 1 ## MY THOUGHT IS THAT YOU COULD ESTIMATE THE COMPLEXITY OF THE FUNCTION BASED ON NUMBER OF DERIVS IN PRODUCT 
+        print(knots)
         
         splineFit <- stats::lm(Product ~ splines::bs(Spot, knots = knots), data = r$productTable) ## FIT A PIECEWISE POLYNOMIAL SPLINE BASED ON COMPLEXITY
         simSpline <- predict(splineFit, newdata = data.frame(Spot = r$simPayoff$Sim)) 
@@ -228,7 +229,7 @@ mod_productSim_server <- function(id, r){
         
         output$simPayoffChart <- plotly::renderPlotly({
           df <- r$simPayoff
-          
+
           p1 <- ggplot2::ggplot(df, ggplot2::aes(x = Time, y = Value, color = Type)) +
             ggplot2::geom_line(size = 0.5) +
             ggplot2::labs(
@@ -248,44 +249,37 @@ mod_productSim_server <- function(id, r){
               legend.text = ggplot2::element_text(size = 9, color = "#193244"),
               legend.title = ggplot2::element_text(size = 11, face = "bold", color = "#193244"),
               legend.background = ggplot2::element_rect(fill = "#ededeb", color = "#193244")
-            ) + 
+            ) +
             ggplot2::scale_y_continuous(labels = scales::percent_format()) +
             ggplot2::scale_color_manual(values = c("Product" = "#193244", "Sim" = "#aeb8bf"))
           
-          
-          p2 <- ggplot2::ggplot(df, aes(x = Value)) +
-            geom_histogram(
-              data = df %>% filter(Type == "Product"), 
-              aes(fill = Type), 
+          p2 <- ggplot2::ggplot(df, ggplot2::aes(x = Value, fill = Type)) +
+            ggplot2::geom_histogram(
               bins = 30, 
               alpha = 0.7, 
               color = "#193244", 
               position = "identity"
             ) +
-            geom_density(
-              data = df %>% filter(Type == "Sim"), 
-              aes(color = Type), 
-              size = 1, 
-              adjust = 1.5 # Optional: Adjust smoothness
-            ) +
-            labs(
+            ggplot2::labs(
               title = "",
               x = "Percent Change",
               y = "Frequency"
             ) +
-            theme(
-              panel.background = element_rect(fill = "#ededeb", color = NA),
-              plot.background = element_rect(fill = "#ededeb", color = NA),
-              panel.grid.major = element_line(color = "#32434f", size = 0.1, linetype = 2),
-              axis.text = element_text(color = "#193244"),
-              axis.title = element_text(color = "#193244", size = 10),
-              panel.border = element_rect(color = "#193244", fill = NA, size = 0.3),
-              axis.line = element_line(color = "#193244")
+            ggplot2::theme(
+              panel.background = ggplot2::element_rect(fill = "#ededeb", color = NA),
+              plot.background = ggplot2::element_rect(fill = "#ededeb", color = NA),
+              panel.grid.major = ggplot2::element_line(color = "#32434f", size = 0.1, linetype = 2),
+              axis.text = ggplot2::element_text(color = "#193244"),
+              axis.title = ggplot2::element_text(color = "#193244", size = 10),
+              panel.border = ggplot2::element_rect(color = "#193244", fill = NA, size = 0.3),
+              axis.line = ggplot2::element_line(color = "#193244"),
+              legend.position = "bottom",
+              legend.text = ggplot2::element_text(size = 9, color = "#193244"),
+              legend.title = ggplot2::element_text(size = 11, face = "bold", color = "#193244"),
+              legend.background = ggplot2::element_rect(fill = "#ededeb", color = "#193244")
             ) +
             ggplot2::scale_x_continuous(labels = scales::percent_format()) +
-            ggplot2::scale_fill_manual(values = c("Product" = "#193244")) +
-            ggplot2::scale_color_manual(values = c("Sim" = "#aeb8bf"))
-          
+            ggplot2::scale_fill_manual(values = c("Product" = "#193244", "Sim" = "#aeb8bf"))
           
           p1 <- plotly::ggplotly(p1)
           p2 <- plotly::ggplotly(p2)
