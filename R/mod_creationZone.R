@@ -382,11 +382,20 @@ mod_creationZone_server <- function(id, r){
         
       ##print(r$productTable)
       
-      r$fairPrice <- r$productTable %>%
-        dplyr::filter(round(abs(Spot), 4) == round(min(abs(Spot)), 4)) %>% 
-        dplyr::pull(Product)
+      ## PROBABILITY OF BREAKEVEN
+      probPos <- r$productTable %>%
+        dplyr::filter(Product >= 0) %>%
+        dplyr::count()
+      totalCount <- r$productTable %>%
+        dplyr::count()
+      r$breakEven <- probPos$n / totalCount$n
       
-      print(r$fairPrice)
+      ## EXPECTED PAYOFF
+      r$expReturn <- mean(r$productTable$Product) 
+      
+      ## MAX LOSS
+      maxLoss <- min(r$productTable$Product)
+      r$maxLoss <- pmin(maxLoss, 0)
         
     })
     

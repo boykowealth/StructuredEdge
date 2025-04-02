@@ -16,17 +16,17 @@ mod_productPayoff_ui <- function(id) {
       
       ## STATS - LEFT <START>
       bslib::card(
-        bslib::card_header("Product Statistics")
+        shiny::uiOutput(ns("exPay"))
       ),
       
       ## POSITIONS - CENTER <START>
       bslib::card(
-        bslib::card_header("Product Breakdown")
+        shiny::uiOutput(ns("breakEvn"))
       ),
       
       ## POSITIONS - RIGHT <START>
       bslib::card(
-        bslib::card_header("Product Breakdown")
+        shiny::uiOutput(ns("maxLoss"))
       )
     ),
     
@@ -87,6 +87,24 @@ mod_productPayoff_server <- function(id, r){
                                    dom = "ft"
                     )
       ) ## update display table
+    })
+    
+    output$maxLoss <- shiny::renderUI({
+      shiny::div(
+        shiny::p(paste("Max Loss: $", format(round(r$maxLoss, 2), big.mark = ",", scientific = FALSE)))
+      )
+    })
+    
+    output$breakEvn <- shiny::renderUI({
+      shiny::div(
+        shiny::p(paste("Break Even Rate: ", round(r$breakEven * 100, 2), "%"))
+      )
+    })
+    
+    output$exPay <- shiny::renderUI({
+      shiny::div(
+        shiny::p(paste("Expected Payoff: $", format(round(r$expReturn, 2), big.mark = ",", scientific = FALSE)))
+      )
     })
     
   })
