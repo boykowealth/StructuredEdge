@@ -86,7 +86,7 @@ mod_creationZone_ui <-  function(id){
                       
                       ## DELETE BUTTON
                       shiny::actionButton(
-                        inputId = "reset_asset_button",
+                        inputId = ns("reset_asset_button"),
                         label = "Reset Position",
                         width = "80%"
                       )
@@ -239,6 +239,23 @@ mod_creationZone_server <- function(id, r){
     ## LISTS <END>
     
     ## r PASSING <START>
+    
+    shiny::observeEvent(input$reset_asset_button, {
+      
+      r$payoffTable <- NULL
+      r$productTable <- NULL
+      
+      
+      output$masterView <- DT::renderDT({
+        DT::datatable(r$placeHolder,
+                      options = list(paging = FALSE,
+                                     dom = "ft"
+                      )
+        ) ## update display table
+      })
+      
+    })
+    
     
     shiny::observeEvent(input$add_asset_button, {
       
