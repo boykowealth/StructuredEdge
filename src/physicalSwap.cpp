@@ -5,18 +5,17 @@
 
 using namespace Rcpp;
 
-// Function for calculating the present value of swap cash flows for a physical commodity
-double commodity_swap_present_value(double fixed_price, double spot_price, double notional, double period_length, double discount_rate) {
-  double discount_factor = exp(-discount_rate * period_length); // Discount factor for the period
+// Function to calculate the payoff of a commodity swap (without discounting)
+double commodity_swap_payoff(double fixed_price, double spot_price, double notional, double period_length) {
   double fixed_leg = fixed_price * period_length * notional;    // Fixed cash flow
   double floating_leg = spot_price * period_length * notional;  // Floating cash flow based on spot price
-  return discount_factor * (floating_leg - fixed_leg);          // Net cash flow, discounted
+  return floating_leg - fixed_leg;          // Net cash flow (Payoff)
 }
 
 // [[Rcpp::export]]
 DataFrame physicalSwap(double fixed_price, double period_length, double spot_price, 
                        double discount_rate, std::string position_str, double nominal) {
-  // Convert position input to 1 for "Long" and -1 for "Short" --> 1 Payer of Fixed, -1 Payer of Floating
+  // Convert position input to 1 for "Long" and -1 for "Short"
   int position;
   if (position_str == "Long" || position_str == "long") {
     position = 1; // Long position
@@ -36,7 +35,7 @@ DataFrame physicalSwap(double fixed_price, double period_length, double spot_pri
   for (double normalized_price = spot_price_min; normalized_price <= spot_price_max; normalized_price += spot_price_step) {
     double spot_price_curr = spot_price * (1.0 + normalized_price); // Convert normalized price back to actual spot price
     normalized_prices.push_back(normalized_price);
-    swap_values.push_back(position * commodity_swap_present_value(fixed_price, spot_price_curr, nominal, period_length, discount_rate)); // Adjusted by position
+    swap_values.push_back(position * commodity_swap_payoff(fixed_price, spot_price_curr, nominal, period_length)); // Adjusted by position
   }
   
   return DataFrame::create(

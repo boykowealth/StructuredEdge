@@ -5,8 +5,8 @@
 
 using namespace Rcpp;
 
-// Function for calculating the present value of variance swap cash flows
-double variance_swap_present_value(double variance_strike, double realized_variance, double nominal) {
+// Function to calculate the payoff of a variance swap (without discounting)
+double variance_swap_payoff(double variance_strike, double realized_variance, double nominal) {
   // Payoff is the difference between realized variance and variance strike, scaled by notional
   return nominal * (realized_variance - variance_strike);
 }
@@ -34,7 +34,7 @@ DataFrame varianceSwap(double variance_strike, double realized_variance_start,
   for (double normalized_variance = realized_variance_min; normalized_variance <= realized_variance_max; normalized_variance += realized_variance_step) {
     double realized_variance = realized_variance_start * (1.0 + normalized_variance); // Convert normalized variance back to actual realized variance
     normalized_variances.push_back(normalized_variance);
-    swap_values.push_back(position * variance_swap_present_value(variance_strike, realized_variance, nominal)); // Adjusted by position
+    swap_values.push_back(position * variance_swap_payoff(variance_strike, realized_variance, nominal)); // Adjusted by position
   }
   
   return DataFrame::create(

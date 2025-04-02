@@ -5,12 +5,11 @@
 
 using namespace Rcpp;
 
-// Function to calculate the present value of an exchange rate swap
-double exchange_rate_swap_present_value(double fixed_rate, double exchange_rate, double notional, double period_length, double discount_rate) {
-  double discount_factor = exp(-discount_rate * period_length); // Discount factor for the period
+// Function to calculate the payoff of an exchange rate swap (without discounting)
+double exchange_rate_swap_payoff(double fixed_rate, double exchange_rate, double notional, double period_length) {
   double fixed_leg = fixed_rate * period_length * notional;    // Fixed cash flow in one currency
   double floating_leg = exchange_rate * period_length * notional; // Floating cash flow based on the exchange rate
-  return discount_factor * (floating_leg - fixed_leg);         // Net cash flow, discounted
+  return floating_leg - fixed_leg;         // Net cash flow (Payoff)
 }
 
 // [[Rcpp::export]]
@@ -36,7 +35,7 @@ DataFrame exchangeRateSwap(double fixed_rate, double period_length, double excha
   for (double normalized_rate = exchange_rate_min; normalized_rate <= exchange_rate_max; normalized_rate += exchange_rate_step) {
     double exchange_rate_curr = exchange_rate * (1.0 + normalized_rate); // Convert normalized rate back to actual exchange rate
     normalized_rates.push_back(normalized_rate);
-    swap_values.push_back(position * exchange_rate_swap_present_value(fixed_rate, exchange_rate_curr, nominal, period_length, discount_rate)); // Adjusted by position
+    swap_values.push_back(position * exchange_rate_swap_payoff(fixed_rate, exchange_rate_curr, nominal, period_length)); // Adjusted by position
   }
   
   return DataFrame::create(

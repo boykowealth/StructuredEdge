@@ -206,16 +206,15 @@ mod_productSim_server <- function(id, r){
       if (!is.null(dfProduct$Spot)){
         ##splineFit <- stats::smooth.spline(r$productTable$Spot, r$productTable$Product, df=5) ## ERRORS IN FITTING
         ##polyFit <- stats::lm(Product ~ stats::poly(Spot, 4), data = dfProduct) ## ERRORS IN FITTING
-        
         ##simSpline <- stats::predict(polyFit, r$simPayoff$Sim)$y
         ##simSpline <- predict(polyFit, newdata = data.frame(Spot = r$simPayoff$Sim))
         ##simSpline <- stats::predict(polyFit, newdata = data.frame(Spot = r$simPayoff$Sim))
         
         k <- ncol(r$payoffTable) - 1 ## MY THOUGHT IS THAT YOU COULD ESTIMATE THE COMPLEXITY OF THE FUNCTION BASED ON NUMBER OF DERIVS IN PRODUCT 
-        print(k)
+        #rint(k)
         kmeans_result <- stats::kmeans(r$productTable$Spot, centers = k)
         knots <- sort(kmeans_result$centers)
-        print(knots)
+        #print(knots)
         
         splineFit <- stats::lm(Product ~ splines::bs(Spot, knots = knots), data = r$productTable) ## FIT A PIECEWISE POLYNOMIAL SPLINE BASED ON COMPLEXITY
         simSpline <- predict(splineFit, newdata = data.frame(Spot = r$simPayoff$Sim)) 
