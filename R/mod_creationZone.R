@@ -61,7 +61,7 @@ mod_creationZone_ui <-  function(id){
                       shiny::selectInput(
                         inputId = ns("deriv_select"),
                         label = "Derivative:",
-                        choices = c("Option", "Forward", "Swap", "Asset"),
+                        choices = c("Option", "Forward", "Swap"), ## REMOVED ASSET -> MAY BE INCLUDED IN THE FUTURE
                         selected = c("Option"),
                         multiple = FALSE,
                         selectize = TRUE,
