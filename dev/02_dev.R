@@ -34,6 +34,7 @@ usethis::use_package("splines")
 golem::add_module(name = "creationZone", with_test = TRUE) # Name of the module
 golem::add_module(name = "productPayoff", with_test = TRUE) # Name of the module
 golem::add_module(name = "productSim", with_test = TRUE) # Name of the module
+golem::add_module(name = "dev", with_test = TRUE) # Name of the module
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*

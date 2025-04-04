@@ -63,7 +63,7 @@ app_ui <- function(request) {
         shiny::tabPanel("Creation Zone", mod_creationZone_ui("creationZone_ui_1")),
         shiny::tabPanel("Product Payoff", mod_productPayoff_ui("productPayoff_ui_1")),
         shiny::tabPanel("Market Simulation", mod_productSim_ui("productSim_ui_1")),
-        shiny::tabPanel("Development", mod_creationZone_ui("creationZone_ui_4"))
+        shiny::tabPanel("Development", mod_dev_ui("dev_ui_1"))
       )
     )
     ## APP MODULES <END>
