@@ -111,7 +111,6 @@ mod_productSim_server <- function(id, r){
     
     shiny::observeEvent(input$Time_value, {
       params$time <- input$Time_value
-      print(params$time)
     })
     
     shiny::observeEvent(input$Theta_value, {
@@ -211,13 +210,15 @@ mod_productSim_server <- function(id, r){
         ##simSpline <- stats::predict(polyFit, newdata = data.frame(Spot = r$simPayoff$Sim))
         
         k <- ncol(r$payoffTable) - 1 ## MY THOUGHT IS THAT YOU COULD ESTIMATE THE COMPLEXITY OF THE FUNCTION BASED ON NUMBER OF DERIVS IN PRODUCT 
-        #rint(k)
+        print(k)
         kmeans_result <- stats::kmeans(r$productTable$Spot, centers = k)
         knots <- sort(kmeans_result$centers)
-        #print(knots)
+        print(knots)
         
         splineFit <- stats::lm(Product ~ splines::bs(Spot, knots = knots), data = r$productTable) ## FIT A PIECEWISE POLYNOMIAL SPLINE BASED ON COMPLEXITY
         simSpline <- predict(splineFit, newdata = data.frame(Spot = r$simPayoff$Sim)) 
+        
+        print(splineFit)
         
         r$simPayoff <- r$simPayoff %>%
           dplyr::mutate(simSpline = simSpline,
@@ -250,7 +251,7 @@ mod_productSim_server <- function(id, r){
               legend.background = ggplot2::element_rect(fill = "#ededeb", color = "#193244")
             ) +
             ggplot2::scale_y_continuous(labels = scales::percent_format()) +
-            ggplot2::scale_color_manual(values = c("Product" = "#193244", "Sim" = "#aeb8bf"))
+            ggplot2::scale_color_manual(values = c("Product" = "#aeb8bf", "Sim" = "#193244"))
           
           p2 <- ggplot2::ggplot(df, ggplot2::aes(x = Value, fill = Type)) +
             ggplot2::geom_histogram(
@@ -278,7 +279,7 @@ mod_productSim_server <- function(id, r){
               legend.background = ggplot2::element_rect(fill = "#ededeb", color = "#193244")
             ) +
             ggplot2::scale_x_continuous(labels = scales::percent_format()) +
-            ggplot2::scale_fill_manual(values = c("Product" = "#193244", "Sim" = "#aeb8bf"))
+            ggplot2::scale_fill_manual(values = c("Product" = "#aeb8bf", "Sim" = "#193244"))
           
           p1 <- plotly::ggplotly(p1)
           p2 <- plotly::ggplotly(p2)

@@ -244,6 +244,8 @@ mod_creationZone_server <- function(id, r){
       
       r$payoffTable <- NULL
       r$productTable <- NULL
+      r$masterTable <- NULL
+      r$viewTable <- NULL
       
       
       output$masterView <- DT::renderDT({

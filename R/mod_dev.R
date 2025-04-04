@@ -10,7 +10,23 @@
 mod_dev_ui <- function(id) {
   ns <- NS(id)
   tagList(
- 
+    bslib::layout_columns(
+      style = "padding-top: 5px;",
+      col_widths = c(6, 6),
+      
+      ## Information
+      bslib::card(
+        bslib::card_header("About StructuredEdge"),
+        
+      ),
+      
+      ## Contact
+      bslib::card(
+        bslib::card_header("Contact"),
+        
+      ),
+      
+    )
   )
 }
     
