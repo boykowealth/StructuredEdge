@@ -215,7 +215,7 @@ mod_productSim_server <- function(id, r){
         knots <- sort(kmeans_result$centers)
         print(knots)
         
-        splineFit <- stats::lm(Product ~ splines::bs(Spot, knots = knots), data = r$productTable) ## FIT A PIECEWISE POLYNOMIAL SPLINE BASED ON COMPLEXITY
+        splineFit <- stats::lm(Product ~ splines::bs(scale(Spot), knots = knots), data = r$productTable) ## FIT A PIECEWISE POLYNOMIAL SPLINE BASED ON COMPLEXITY
         simSpline <- predict(splineFit, newdata = data.frame(Spot = r$simPayoff$Sim)) 
         
         print(splineFit)

@@ -74,7 +74,7 @@ mod_creationZone_ui <-  function(id){
                       ## NOMINAL VALUE
                       shiny::numericInput(
                         inputId = ns('nominal_num'), 
-                        label = 'Nominal Value:',
+                        label = 'Nominal Value ($):',
                         value = 100000,
                         min = 1,
                         step = 1,
@@ -580,7 +580,7 @@ mod_creationZone_server <- function(id, r){
       mapply(function(clean_param, original_param) {
         shiny::numericInput(
           inputId = ns(paste0(clean_param, "_value")), # Use cleaned names for inputId
-          label = paste(original_param, ":"),         # Use original names for label
+          label = paste(original_param, ":"),         # Use original names for label  
           value = 0,
           min = 0,
           step = 0.01,
@@ -593,12 +593,12 @@ mod_creationZone_server <- function(id, r){
       params <- list.params()
       half <- ceiling(length(params) / 2) ## Used in spliting list
       params_right <- params[(half + 1):length(params)] ## Splits back half of list
-      params_right_clean <- lapply(params_right, function(x) gsub(" ", "", x)) ## Creates standard naming convention
+      params_right_clean <- lapply(params_right, function(x) gsub(" ", "", x)) 
       
       mapply(function(clean_param, original_param) {
         shiny::numericInput(
-          inputId = ns(paste0(clean_param, "_value")), # Use cleaned names for inputId
-          label = paste(original_param, ":"),         # Use original names for label
+          inputId = ns(paste0(clean_param, "_value")), 
+          label = paste(original_param, ":"),   
           value = 0,
           min = 0,
           step = 0.01,
