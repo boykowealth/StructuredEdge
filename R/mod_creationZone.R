@@ -160,6 +160,19 @@ mod_creationZone_server <- function(id, r){
       Asset = c(0, 0, 1)
     )
     
+    
+    df.units <- dplyr::tibble(
+      Param = c("Premium", "Spot Price", "Strike Price", "Time to Maturity", "Risk Free Interest Rate", 
+                "Volatility", "Cost of Carry", "Up Factor", "Down Factor", "Probability", "Steps", 
+                "Foreign Rate", "Domestic Rate", "Rate T1", "Rate T2", "Time 1", "Time 2", "Fixed Spot", 
+                "Floating Spot", "Fixed Rate", "Floating Rate", "Nominal Value", "Fixed Exchange Rate", 
+                "Float Exchange Rate", "Variance Strike", "Realized Variance", "Credit Spread", "Recovery Rate"),
+      Unit = c("($)", "($)", "($)", "(Years)", "(Decimal)", "(Decimal)", "(Decimal)","($)", "($)", "(Decimal)", 
+               "(Integer)", "(Decimal)", "(Decimal)", "(Decimal)", "(Decimal)", "(Years)", "(Years)", 
+               "($)", "($)", "(Decimal)", "(Decimal)", "($)", "(Number)", "(Number)", "(Decimal)", "(Decimal)", "($)", 
+               "(Decimal)")
+      )
+    
     ## DATAFRAMES LOCAL <END>
     
     ## DATAFRAMES GLOBAL <START>
@@ -205,7 +218,7 @@ mod_creationZone_server <- function(id, r){
       floatRate = 0,
       fixExcRate = 0,
       floatExcRate = 0,
-      VarStike = 0,
+      varStike = 0,
       realVar = 0,
       creditSpread = 0,
       recovRate = 0
@@ -577,10 +590,17 @@ mod_creationZone_server <- function(id, r){
       params_left <- params[1:half] ## Splits front half of list
       params_left_clean <- lapply(params_left, function(x) gsub(" ", "", x)) ## Creates standard naming convention
       
+      units_left <- df.units %>% 
+        dplyr::filter(Param %in% params_left)
+      unit_map_left <- setNames(units_left$Unit, units_left$Param)
+      
       mapply(function(clean_param, original_param) {
+        
+        unit_label_left <- unit_map_left[[original_param]]
+        
         shiny::numericInput(
           inputId = ns(paste0(clean_param, "_value")), # Use cleaned names for inputId
-          label = paste(original_param, ":"),         # Use original names for label  
+          label = paste(original_param, " ", unit_label_left,":"),         # Use original names for label  
           value = 0,
           min = 0,
           step = 0.01,
@@ -595,10 +615,17 @@ mod_creationZone_server <- function(id, r){
       params_right <- params[(half + 1):length(params)] ## Splits back half of list
       params_right_clean <- lapply(params_right, function(x) gsub(" ", "", x)) 
       
+      units_right <- df.units %>% 
+        dplyr::filter(Param %in% params_right)
+      unit_map_right <- setNames(units_right$Unit, units_right$Param)
+      
       mapply(function(clean_param, original_param) {
+        
+        unit_label_right <- unit_map_right[[original_param]]
+        
         shiny::numericInput(
           inputId = ns(paste0(clean_param, "_value")), 
-          label = paste(original_param, ":"),   
+          label = paste(original_param, " ", unit_label_right, ":"),   
           value = 0,
           min = 0,
           step = 0.01,

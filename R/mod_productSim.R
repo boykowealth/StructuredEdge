@@ -86,6 +86,13 @@ mod_productSim_server <- function(id, r){
         dplyr::pull(Param)  # Extract the "Param" column as a vector
     })
     
+    df.units <- dplyr::tibble(
+      Param = c("Step Size", "Spot", "Mu", "Sigma", "Time", 
+                "Theta", "Jump Probability", "Jump Mean", "Jump Sigma"),
+      Unit = c("(Years)", "($)", "($)", "($)", "(Years)", 
+               "(Days)", "(Decimal)","($)", "($)")
+    )
+    
     ## PARAMETERS <END>
     
     ## OBSERVERS <START>
@@ -137,10 +144,17 @@ mod_productSim_server <- function(id, r){
       params <- list.params()
       params_clean <- lapply(params, function(x) gsub(" ", "", x)) ## Creates standard naming convention
       
+      units <- df.units %>% 
+        dplyr::filter(Param %in% params)
+      unit_map <- setNames(units$Unit, units$Param)
+      
       mapply(function(params_clean, original_param) {
+        
+        unit_label <- unit_map[[original_param]]
+        
         shiny::numericInput(
-          inputId = ns(paste0(params_clean, "_value")), # Use cleaned names for inputId
-          label = paste(original_param, ":"),         # Use original names for label
+          inputId = ns(paste0(params_clean, "_value")),
+          label = paste(original_param, " ", unit_label, ":"), 
           value = 0,
           min = 0,
           step = 0.01,
@@ -208,22 +222,30 @@ mod_productSim_server <- function(id, r){
         ##simSpline <- stats::predict(polyFit, r$simPayoff$Sim)$y
         ##simSpline <- predict(polyFit, newdata = data.frame(Spot = r$simPayoff$Sim))
         ##simSpline <- stats::predict(polyFit, newdata = data.frame(Spot = r$simPayoff$Sim))
+      
         
         k <- ncol(r$payoffTable) - 1 ## MY THOUGHT IS THAT YOU COULD ESTIMATE THE COMPLEXITY OF THE FUNCTION BASED ON NUMBER OF DERIVS IN PRODUCT 
-        print(k)
-        kmeans_result <- stats::kmeans(r$productTable$Spot, centers = k)
+        
+        minIndex <- which.min(abs(r$productTable$Spot))
+        spotLocal <- r$productTable$Product[minIndex]
+        
+        print(spotLocal)
+        
+        dfProductLocal <- r$productTable %>% 
+          dplyr::mutate(Ret = round((Product / spotLocal) -1 ,4))
+        
+        print(dfProductLocal)
+        
+        kmeans_result <- stats::kmeans(dfProductLocal$Ret, centers = k)
         knots <- sort(kmeans_result$centers)
         print(knots)
         
-        splineFit <- stats::lm(Product ~ splines::bs(scale(Spot), knots = knots), data = r$productTable) ## FIT A PIECEWISE POLYNOMIAL SPLINE BASED ON COMPLEXITY
+        splineFit <- stats::lm(Product ~ splines::bs(Ret, knots = knots, degree = 2, Boundary.knots = c(min(Ret), max(Ret))), data = dfProductLocal) ## FIT A PIECEWISE POLYNOMIAL SPLINE BASED ON COMPLEXITY
+        print(splineFit)
         simSpline <- predict(splineFit, newdata = data.frame(Spot = r$simPayoff$Sim)) 
         
-        print(splineFit)
-        
         r$simPayoff <- r$simPayoff %>%
-          dplyr::mutate(simSpline = simSpline,
-                        Product = round((simSpline / dplyr::first(simSpline)) - 1, 4)
-                        ) %>% 
+          dplyr::mutate(Product = simSpline) %>% 
           dplyr::select(Time, Sim, Product) %>% 
           tidyr::pivot_longer(., cols = c(Sim, Product), names_to = "Type", values_to = "Value")
         
