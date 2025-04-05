@@ -10,7 +10,6 @@ double norm_cdf(double x) {
   return 0.5 * std::erfc(-x / std::sqrt(2));
 }
 
-// Black-Scholes option pricing formula with cost of carry
 double black_scholes_price(std::string option_type, double S, double K, double T, double r, double sigma, double b) {
   double d1 = (std::log(S / K) + (b + 0.5 * sigma * sigma) * T) / (sigma * std::sqrt(T));
   double d2 = d1 - sigma * std::sqrt(T);
@@ -26,12 +25,11 @@ double black_scholes_price(std::string option_type, double S, double K, double T
 
 // [[Rcpp::export]]
 DataFrame blackScholes(double S, double K, double T, double r, double sigma, double b, std::string option_type, std::string position_str, double nominal, double option_cost) {
-  // Convert position input to 1 for "Long" and -1 for "Short"
   int position;
   if (position_str == "Long" || position_str == "long") {
-    position = 1; // Long position
+    position = 1;
   } else if (position_str == "Short" || position_str == "short") {
-    position = -1; // Short position
+    position = -1;
   } else {
     Rcpp::stop("Invalid position. Use 'Long' for long position or 'Short' for short position.");
   }
@@ -43,8 +41,8 @@ DataFrame blackScholes(double S, double K, double T, double r, double sigma, dou
   std::vector<double> normalized_spots, black_scholes_prices;
   
   for (double normalized_spot = S_min; normalized_spot <= S_max; normalized_spot += S_step) {
-    double S_curr = S * (1.0 + normalized_spot); // Convert normalized spot back to price
-    double option_value = black_scholes_price(option_type, S_curr, K, T, r, sigma, b); // Option value from Black-Scholes formula
+    double S_curr = S * (1.0 + normalized_spot); 
+    double option_value = black_scholes_price(option_type, S_curr, K, T, r, sigma, b); 
     double net_value = (option_value - option_cost) * nominal * position; // Payoff calculation
     normalized_spots.push_back(normalized_spot);
     black_scholes_prices.push_back(net_value);

@@ -261,6 +261,8 @@ mod_productSim_server <- function(id, r){
         #   dplyr::select(Time, Sim, Product, sim, product) %>% 
         #   tidyr::pivot_longer(., cols = c(Sim, Product, sim, product), names_to = "Type", values_to = "Value")
       
+        
+        ## TEMPORARY FIX -> EXTEND WITH PEICEWISE FUNCTIONS TO ACCOUNT FOR VALUES > 100% (TO BE ADDED SPRING 2025)
         r$simPayoff <- r$simData %>% 
           dplyr::mutate(Spot = round((Price / dplyr::first(Price)) - 1, 4)) %>% 
           tidyr::fill(Spot, .direction = "up")
@@ -275,7 +277,7 @@ mod_productSim_server <- function(id, r){
           tidyr::fill(Product, .direction = "down") %>% 
           dplyr::mutate(
             product = ifelse(is.na(dplyr::lag(Product)), 0, (Product - dplyr::lag(Product))),
-            Sim = dplyr::if_else(row_number() == 1, Product, dplyr::first(Product) * (1 + Spot)), ## SCALE SIMULATED CHANGES 
+            Sim = dplyr::if_else(dplyr::row_number() == 1, Product, dplyr::first(Product) * (1 + Spot)), ## SCALE SIMULATED CHANGES 
             sim = ifelse(is.na(dplyr::lag(Sim)), 0, (Sim - dplyr::lag(Sim)))
           
             # product = ifelse(is.na(dplyr::lag(Product)), 0, (Product / dplyr::lag(Product)) - 1),
@@ -284,10 +286,6 @@ mod_productSim_server <- function(id, r){
             # sim = c(0, diff(Spot) / head(Spot, -1))
           ) %>% 
           tidyr::pivot_longer(., cols = c(Sim, Product, sim, product), names_to = "Type", values_to = "Value")
-        
-        print(r$modelFit)
-        #write.csv(r$modelFit, "C:/Users/Brayden Boyko/Downloads/test_df.csv", row.names = FALSE)
-        
         
         output$simPayoffChart <- plotly::renderPlotly({
           df <- r$modelFit
