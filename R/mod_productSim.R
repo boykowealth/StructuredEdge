@@ -210,49 +210,95 @@ mod_productSim_server <- function(id, r){
       }) ## CREATE PAYOFF CHART
       
       ## ESTIMATE PAYOFF SPLINE INTERPOLATION
-      r$simPayoff <- r$simData %>% 
-        dplyr::mutate(Sim = round((Price / dplyr::first(Price)) - 1, 4)) %>% 
-        tidyr::fill(Sim, .direction = "up")
       
       dfProduct <- as.data.frame(r$productTable)
       
       if (!is.null(dfProduct$Spot)){
-        ##splineFit <- stats::smooth.spline(r$productTable$Spot, r$productTable$Product, df=5) ## ERRORS IN FITTING
-        ##polyFit <- stats::lm(Product ~ stats::poly(Spot, 4), data = dfProduct) ## ERRORS IN FITTING
-        ##simSpline <- stats::predict(polyFit, r$simPayoff$Sim)$y
-        ##simSpline <- predict(polyFit, newdata = data.frame(Spot = r$simPayoff$Sim))
-        ##simSpline <- stats::predict(polyFit, newdata = data.frame(Spot = r$simPayoff$Sim))
+        
+        # splineFit <- stats::smooth.spline(r$productTable$Spot, r$productTable$Product, df=5) ## ERRORS IN FITTING
+        # polyFit <- stats::lm(Product ~ stats::poly(Spot, 4), data = dfProduct) ## ERRORS IN FITTING
+        # simSpline <- stats::predict(polyFit, r$simPayoff$Sim)$y
+        # simSpline <- predict(polyFit, newdata = data.frame(Spot = r$simPayoff$Sim))
+        # simSpline <- stats::predict(polyFit, newdata = data.frame(Spot = r$simPayoff$Sim))
+        
+        # ## COMPRESS RETURNS BY UNDERLYING USING SIGNMOID FUNCTION
+        # sim_min <- min(r$simPayoff$Sim)
+        # sim_max <- max(r$simPayoff$Sim)
+        # range <- (sim_max - sim_min) * 1.2 ## LEVERED POSITIONS
+        # 
+        # sigmoid_scale <- function(x) {
+        #   sigmoid_value <- 1 / (1 + exp(-0.01 * x))
+        #   
+        #   vals <- 0 + (sigmoid_value * range) ## STARTS AT ZERO 
+        #   
+        #   return(vals)
+        # }
+        
+        # k <- ncol(r$payoffTable) - 1 ## MY THOUGHT IS THAT YOU COULD ESTIMATE THE COMPLEXITY OF THE FUNCTION BASED ON NUMBER OF DERIVS IN PRODUCT 
+        # productLocal <- abs(r$productTable$Product[which.min(abs(r$productTable$Spot))])
+        # print(productLocal)
+        # 
+        # 
+        # modelFit <- r$productTable %>% 
+        #   dplyr::mutate(prodRet = (Product / productLocal),
+        #                 prodRet = pr
+        #                 ) 
+        # 
+        # kmeans_result <- stats::kmeans(modelFit$prodRet, centers = k)
+        # knots <- sort(kmeans_result$centers)
+        # 
+        # print(knots)
+        # 
+        # splineFit <- stats::lm(prodRet ~ splines::bs(Spot, knots = knots), data = modelFit) ## FIT A PIECEWISE POLYNOMIAL SPLINE BASED ON COMPLEXITY
+        # simSpline <- stats::predict(splineFit, newdata = data.frame(Spot = r$simPayoff$Sim))
+        
+        # r$simPayoff <- r$simPayoff %>%
+        #   dplyr::mutate(
+        #     Product = simSpline,
+        #     sim = replace(c(NA, diff(Sim) / head(Sim, -1) - 1), is.na(c(NA, diff(Sim) / head(Sim, -1) - 1)), 0),
+        #     product = replace(c(NA, diff(Product) / head(Product, -1) - 1), is.na(c(NA, diff(Product) / head(Product, -1) - 1)), 0)
+        #   ) %>% 
+        #   dplyr::select(Time, Sim, Product, sim, product) %>% 
+        #   tidyr::pivot_longer(., cols = c(Sim, Product, sim, product), names_to = "Type", values_to = "Value")
       
+        r$simPayoff <- r$simData %>% 
+          dplyr::mutate(Spot = round((Price / dplyr::first(Price)) - 1, 4)) %>% 
+          tidyr::fill(Spot, .direction = "up")
         
-        k <- ncol(r$payoffTable) - 1 ## MY THOUGHT IS THAT YOU COULD ESTIMATE THE COMPLEXITY OF THE FUNCTION BASED ON NUMBER OF DERIVS IN PRODUCT 
+        stdProdTable <- r$productTable %>% 
+          dplyr::mutate(Spot = round(Spot, 4))
         
-        minIndex <- which.min(abs(r$productTable$Spot))
-        spotLocal <- r$productTable$Product[minIndex]
+        epsilon <- 1e-6
         
-        print(spotLocal)
+        r$modelFit <- r$simPayoff %>% 
+          dplyr::left_join(stdProdTable, by = "Spot") %>% 
+          tidyr::fill(Product, .direction = "down") %>% 
+          dplyr::mutate(
+            product = ifelse(is.na(dplyr::lag(Product)), 0, (Product - dplyr::lag(Product))),
+            Sim = dplyr::if_else(row_number() == 1, Product, dplyr::first(Product) * (1 + Spot)), ## SCALE SIMULATED CHANGES 
+            sim = ifelse(is.na(dplyr::lag(Sim)), 0, (Sim - dplyr::lag(Sim)))
+          
+            # product = ifelse(is.na(dplyr::lag(Product)), 0, (Product / dplyr::lag(Product)) - 1),
+            # Product = (Product / dplyr::first(Product)) - 1,
+            # Sim = Spot,
+            # sim = c(0, diff(Spot) / head(Spot, -1))
+          ) %>% 
+          tidyr::pivot_longer(., cols = c(Sim, Product, sim, product), names_to = "Type", values_to = "Value")
         
-        dfProductLocal <- r$productTable %>% 
-          dplyr::mutate(Ret = round((Product / spotLocal) -1 ,4))
+        print(r$modelFit)
+        #write.csv(r$modelFit, "C:/Users/Brayden Boyko/Downloads/test_df.csv", row.names = FALSE)
         
-        print(dfProductLocal)
-        
-        kmeans_result <- stats::kmeans(dfProductLocal$Ret, centers = k)
-        knots <- sort(kmeans_result$centers)
-        print(knots)
-        
-        splineFit <- stats::lm(Product ~ splines::bs(Ret, knots = knots, degree = 2, Boundary.knots = c(min(Ret), max(Ret))), data = dfProductLocal) ## FIT A PIECEWISE POLYNOMIAL SPLINE BASED ON COMPLEXITY
-        print(splineFit)
-        simSpline <- predict(splineFit, newdata = data.frame(Spot = r$simPayoff$Sim)) 
-        
-        r$simPayoff <- r$simPayoff %>%
-          dplyr::mutate(Product = simSpline) %>% 
-          dplyr::select(Time, Sim, Product) %>% 
-          tidyr::pivot_longer(., cols = c(Sim, Product), names_to = "Type", values_to = "Value")
         
         output$simPayoffChart <- plotly::renderPlotly({
-          df <- r$simPayoff
+          df <- r$modelFit
+          
+          df1 <- df %>% 
+            dplyr::filter(Type == c("Sim", "Product"))
+          
+          df2 <- df %>% 
+            dplyr::filter(Type == c("sim", "product"))
 
-          p1 <- ggplot2::ggplot(df, ggplot2::aes(x = Time, y = Value, color = Type)) +
+          p1 <- ggplot2::ggplot(df1, ggplot2::aes(x = Time, y = Value, color = Type)) +
             ggplot2::geom_line(size = 0.5) +
             ggplot2::labs(
               title = "",
@@ -272,10 +318,10 @@ mod_productSim_server <- function(id, r){
               legend.title = ggplot2::element_text(size = 11, face = "bold", color = "#193244"),
               legend.background = ggplot2::element_rect(fill = "#ededeb", color = "#193244")
             ) +
-            ggplot2::scale_y_continuous(labels = scales::percent_format()) +
+            ggplot2::scale_y_continuous(labels = scales::dollar_format()) +
             ggplot2::scale_color_manual(values = c("Product" = "#aeb8bf", "Sim" = "#193244"))
           
-          p2 <- ggplot2::ggplot(df, ggplot2::aes(x = Value, fill = Type)) +
+          p2 <- ggplot2::ggplot(df2, ggplot2::aes(x = Value, fill = Type)) +
             ggplot2::geom_histogram(
               bins = 30, 
               alpha = 0.7, 
@@ -300,8 +346,8 @@ mod_productSim_server <- function(id, r){
               legend.title = ggplot2::element_text(size = 11, face = "bold", color = "#193244"),
               legend.background = ggplot2::element_rect(fill = "#ededeb", color = "#193244")
             ) +
-            ggplot2::scale_x_continuous(labels = scales::percent_format()) +
-            ggplot2::scale_fill_manual(values = c("Product" = "#aeb8bf", "Sim" = "#193244"))
+            ggplot2::scale_x_continuous(labels = scales::dollar_format()) +
+            ggplot2::scale_fill_manual(values = c("product" = "#aeb8bf", "sim" = "#193244"))
           
           p1 <- plotly::ggplotly(p1)
           p2 <- plotly::ggplotly(p2)
